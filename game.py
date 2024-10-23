@@ -11,7 +11,7 @@ width, length = screen.get_size() #get the windows size
 pygame.display.set_caption('Lawbreakers\' hunters')
 
 screen.fill((0, 0, 0))
-#kiki
+
 #background
 scale = 8
 background = pygame.image.load("C:\\Users\\ASUS\\Downloads\\background.jpg")
