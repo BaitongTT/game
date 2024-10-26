@@ -5,16 +5,16 @@ pygame.init()
 clock = pygame.time.Clock()
 FPS = 140
 
+pygame.display.set_caption('Trick or Treat' )
 screen = pygame.display.set_mode((720, 400))
 width, length = screen.get_size() #get the windows size
 #print(width, length) to get 1536, 864
-pygame.display.set_caption('Lawbreakers\' hunters')
 
 screen.fill((0, 0, 0))
 
 #background
 scale = 8
-background = pygame.image.load("C:\\Users\\ASUS\\Downloads\\background.jpg")
+background = pygame.image.load("background_2.png")
 background = pygame.transform.scale(background,(background.get_width() / scale, 
     background.get_height() / scale))
 background_rect = background.get_rect()
@@ -22,7 +22,7 @@ background_rect.center = ((350, 200))
 
 #dirt
 scale = 9
-dirt_block = pygame.image.load("C:\\Users\\ASUS\\Downloads\\dirt_block.jpg")
+dirt_block = pygame.image.load("block.png")
 dirt_block = pygame.transform.scale(dirt_block,(dirt_block.get_width() / scale, 
     dirt_block.get_height() / scale))
 dirt_block_rect = dirt_block.get_rect()
@@ -92,4 +92,5 @@ while run:
                 movetothe_right = False
 
     pygame.display.update() #update the screen
+
 pygame.quit()
