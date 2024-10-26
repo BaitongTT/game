@@ -13,16 +13,9 @@ width, length = screen.get_size() #get the windows size
 screen.fill((0, 0, 0))
 
 #background
-scale = 8
-background = pygame.image.load("background_2.png")
-background = pygame.transform.scale(background,(background.get_width() / scale, 
-    background.get_height() / scale))
-background_rect = background.get_rect()
-background_rect.center = ((350, 200))
-
-#dirt
-scale = 9
-dirt_block = pygame.image.load("block.png")
+background = pygame.image.load("Image/background_2.png").convert_alpha()
+scale =1.2
+dirt_block = pygame.image.load("Image/block.png").convert_alpha()
 dirt_block = pygame.transform.scale(dirt_block,(dirt_block.get_width() / scale, 
     dirt_block.get_height() / scale))
 dirt_block_rect = dirt_block.get_rect()
@@ -38,11 +31,10 @@ class character1(pygame.sprite.Sprite):
         self.direction = 1
         self.flip = False
         pygame.sprite.Sprite.__init__(self)
-        char1 = pygame.image.load("C:\\Users\\ASUS\\Downloads\\char1_1.png")
-        self.char1 = pygame.transform.scale(char1, (char1.get_width() / scale, 
-        char1.get_height() / scale))
-        self.char1_rect = self.char1.get_rect()
-        self.char1_rect.center = (x, y)
+        self.char_1 = pygame.image.load("Image/character_1.png").convert_alpha()
+        self.char_1_rect = self.char_1.get_rect()
+        self.char_1_rect.center = (x, y)
+    
 
     def move(self, movetothe_left, movetothe_right):
         change_x = 0
@@ -56,18 +48,18 @@ class character1(pygame.sprite.Sprite):
             self.direction = 1
 
         #update position
-        self.char1_rect.x += change_x
+        self.char_1_rect.x += change_x
 
     def draw(self):
         #false part is used for fliping to not be upside down
-        screen.blit(pygame.transform.flip(self.char1,self.flip, False), self.char1_rect)
+        screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
 
-player = character1(60, 277, 5, 2)
+player = character1(55, 288, 5, 2)
 
 run = True
 while run:
     clock.tick(FPS)
-    screen.blit(background, background_rect)
+    screen.blit(background, (0,0))
     screen.blit(dirt_block, dirt_block_rect)
     player.draw()
     player.move(movetothe_left, movetothe_right)
