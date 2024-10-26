@@ -5,6 +5,7 @@ pygame.init()
 clock = pygame.time.Clock()
 FPS = 140
 
+#set display
 pygame.display.set_caption('Trick or Treat' )
 screen = pygame.display.set_mode((720, 400))
 width, length = screen.get_size() #get the windows size
