@@ -72,7 +72,7 @@ class DirtBlock(pygame.sprite.Sprite):
 dirt_blocks = pygame.sprite.Group()
 
 # Add multiple dirt blocks to the group
-for i in range(0, 3000, 40):  # start, how long, space
+for i in range(0, 9000, 40):  # start, how long, space
     '''if random.random() < 0.2:  #assign percent for create lave blocks
         block = LavaBlock(i, 361)
     else:
@@ -80,6 +80,31 @@ for i in range(0, 3000, 40):  # start, how long, space
     blocks.add(block)'''
     block = DirtBlock(i, 361, 9)
     dirt_blocks.add(block)
+
+#floating blocks
+def create_floating_blocks(start_x, y_pos, count): #y = 290 is the second floor, y = 220 is the third floor
+    for step in range(count):
+        x_position = start_x + (step * 40)
+        block = DirtBlock(x_position, y_pos, 9)
+        dirt_blocks.add(block)
+create_floating_blocks(300, 290, 6)
+create_floating_blocks(1000, 290, 10)
+create_floating_blocks(1700, 290, 6)
+create_floating_blocks(1950, 220, 9)
+create_floating_blocks(2500, 290, 10)
+create_floating_blocks(2900, 220, 8)
+create_floating_blocks(3220, 150, 15)
+create_floating_blocks(4000, 290, 10)
+create_floating_blocks(4400, 220, 10)
+create_floating_blocks(5000, 290, 6)
+create_floating_blocks(5250, 220, 15)
+create_floating_blocks(6000, 290, 8)
+create_floating_blocks(6320, 220, 3)
+create_floating_blocks(6450, 150, 15)
+create_floating_blocks(7100, 220, 5)
+create_floating_blocks(7350, 150, 8)
+create_floating_blocks(7700, 220, 5)
+create_floating_blocks(8000, 290, 15)
 
 #moving objects
 speed = 1
