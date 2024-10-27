@@ -3,15 +3,13 @@ pygame.init()
 
 #framerate
 clock = pygame.time.Clock()
-FPS = 140
+FPS = 120
 
 #set display
 pygame.display.set_caption('Trick or Treat' )
 screen = pygame.display.set_mode((720, 400))
 width, length = screen.get_size() #get the windows size
 #print(width, length) to get 1536, 864
-
-screen.fill((0, 0, 0))
 
 #background
 background = pygame.image.load("Image/background_2.png").convert_alpha()
