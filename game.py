@@ -3,14 +3,12 @@ pygame.init()
 
 #framerate
 clock = pygame.time.Clock()
-FPS = 140
+FPS = 120
 
 screen = pygame.display.set_mode((720, 400))
 width, length = screen.get_size() #get the windows size
 #print(width, length) to get 1536, 864
 pygame.display.set_caption('Lawbreakers\' hunters')
-
-screen.fill((0, 0, 0))
 
 #background
 scale = 8
