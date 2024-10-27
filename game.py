@@ -49,6 +49,11 @@ class character1(pygame.sprite.Sprite):
         #update position
         self.char_1_rect.x += change_x
 
+        if self.char1_rect.left < 0:  #dont go out of the left side
+            self.char1_rect.left = 0
+        if self.char1_rect.right > 720:  #dont go out of the right side
+            self.char1_rect.right = 720
+
     def draw(self):
         #false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
