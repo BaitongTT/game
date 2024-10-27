@@ -25,7 +25,6 @@ class character1(pygame.sprite.Sprite):
         self.char_1_rect = self.char_1.get_rect()
         self.char_1_rect.center = (x, y)
     
-
     def move(self, movetothe_left, movetothe_right):
         change_x = 0
         if (movetothe_left):
@@ -63,11 +62,22 @@ class DirtBlock(pygame.sprite.Sprite):
         self.image = load_and_scale_image("Image/block.png", 1)
         self.rect = self.image.get_rect(topleft=(x, y))
 
+'''class LavaBlock(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = load_and_scale_image(" ", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))'''
+
 # Create a group for dirt blocks
 dirt_blocks = pygame.sprite.Group()
 
 # Add multiple dirt blocks to the group
 for i in range(0, 3000, 40):  # start, how long, space
+    '''if random.random() < 0.2:  #assign percent for create lave blocks
+        block = LavaBlock(i, 361)
+    else:
+        block = DirtBlock(i, 361)
+    blocks.add(block)'''
     block = DirtBlock(i, 361, 9)
     dirt_blocks.add(block)
 
