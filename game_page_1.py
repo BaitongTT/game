@@ -4,7 +4,7 @@ pygame.init()
 
 #framerate
 clock = pygame.time.Clock()
-FPS = 140
+FPS = 80
 
 pygame.display.set_caption('Trick or Treat' )
 screen = pygame.display.set_mode((720, 400))
@@ -12,7 +12,7 @@ width, length = screen.get_size() #get the windows size
 #print(width, length) to get 1536, 864
 screen.fill((0, 0, 0))
 
-# สร้างฟังค์ชันการกด
+# button function
 class Button:
     def __init__(self, image_path, position, scale = 1.0):
         self.image = pygame.image.load(image_path).convert_alpha()
@@ -33,8 +33,18 @@ class Button:
 
 #load images
 background_start = pygame.image.load("Image/background_1.png").convert_alpha()
+select_charecters = pygame.image.load("Image/select_charecters.png").convert_alpha()
+background_charecter_1 = pygame.image.load("Image/select_1.png").convert_alpha()
+background_charecter_2 = pygame.image.load("Image/select_2.png").convert_alpha()
+background_charecter_3 = pygame.image.load("Image/select_3.png").convert_alpha()
+
+# set button
 button_start = Button("Image/button_start.png" ,(300,300))  #Button เป็นการกำหนดว่ารูปนี้คือปุ่ม
 button_howtoplay= Button("Image/button_howtoplay.png",(0,250))
+
+# variable
+button_value = False
+select_charecters_value = False
 
 
 #game loop
@@ -46,7 +56,13 @@ while run:
     button_start.draw(screen)
     #button start
     if button_start.is_pressed():
-        print("111")
+        button_value = True
+    if button_value == True:
+        screen.blit(select_charecters,(0,0))
+        select_charecters_value = True
+
+        
+    
         
         
     for event in pygame.event.get():
