@@ -39,20 +39,17 @@ background_character_2 = pygame.image.load("Image/select_2.png").convert_alpha()
 background_character_3 = pygame.image.load("Image/select_3.png").convert_alpha()
 
 # set button
-button_start = Button("Image/button_start.png" ,(300,300))  #Button เป็นการกำหนดว่ารูปนี้คือปุ่ม
+button_start = Button("Image/button_start.png" ,(300,320))  #Button เป็นการกำหนดว่ารูปนี้คือปุ่ม
 button_howtoplay= Button("Image/button_howtoplay.png",(0,250))
 character_1 = Button("Image/1_charecter.png",(60,133))
 character_2 = Button("Image/2_charecter.png",(269,135))
 character_3 = Button("Image/3_charecter.png",(479,135))
-button_back = Button("Image/button_back.png",(300,300 ))
+
 
 # variable
 button_value = False
 select_characters_value = False
-character_1_value = True
-character_2_value = False
-character_3_value = False
-
+character_value = False
 
 #game loop
 run = True
@@ -66,19 +63,17 @@ while run:
         button_value = True
     if button_value == True:
         screen.blit(select_characters,(0,0))
-        select_characters_value = True
-    if select_characters_value == True:
         character_1.draw(screen)
         character_2.draw(screen)
         character_3.draw(screen)
-    if character_1.is_pressed():
-        screen.blit(background_character_1,(0,0))
-    elif character_2.is_pressed():
-        screen.blit(background_character_2,(0,0))
-    elif character_3.is_pressed():
-        screen.blit(background_character_3,(0,0))
+        if character_1.is_pressed():
+            screen.blit(background_character_1,(0,0))
+        if character_2.is_pressed():
+            screen.blit(background_character_2,(0,0))
+        if character_3.is_pressed():
+            screen.blit(background_character_3,(0,0))
 
-            
+        
     
         
         
