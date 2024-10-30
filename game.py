@@ -130,7 +130,7 @@ create_floating_blocks(7700, 220, 5)
 create_floating_blocks(8000, 290, 15)
 
 #moving objects
-speed = 1
+speed = 5
 def move_objects_for_right(speed, move):
     if move:
         for block in dirt_blocks:
