@@ -33,7 +33,7 @@ class Button:
 
 #load images
 background_start = pygame.image.load("Image/background_1.png").convert_alpha()
-select_charecters = pygame.image.load("Image/select_charecters.png").convert_alpha()
+select_charecters = pygame.image.load("Image/select_charecter.png").convert_alpha()
 background_charecter_1 = pygame.image.load("Image/select_1.png").convert_alpha()
 background_charecter_2 = pygame.image.load("Image/select_2.png").convert_alpha()
 background_charecter_3 = pygame.image.load("Image/select_3.png").convert_alpha()
@@ -69,17 +69,9 @@ while run:
         screen.blit(select_charecters,(0,0))
         select_charecters_value = True
     if select_charecters_value == True:
-            charecters_1.draw(screen)
-            charecters_2.draw(screen)
-            charecters_3.draw(screen)
-    '''     
-    if charecters_1.is_pressed():
-        charecters_1_value == True
-        if charecters_1_value == True:
-            print("111")
-    '''
-
-        
+        charecters_1.draw(screen)
+        charecters_2.draw(screen)
+        charecters_3.draw(screen)
     
         
         
