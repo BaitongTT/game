@@ -72,6 +72,7 @@ class character1(pygame.sprite.Sprite):
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
 
 player = character1(55, 288, 5, 2)
+enemy = character1(55, 288, 5, 2)
 
 def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
@@ -141,6 +142,7 @@ while run:
     clock.tick(FPS)
     screen.blit(background, (0,0))
     player.draw()
+    enemy.draw()
     player.update_jump()
     player.move(movetothe_left, movetothe_right)
     dirt_blocks.draw(screen)
