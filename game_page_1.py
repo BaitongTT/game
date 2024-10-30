@@ -56,7 +56,7 @@ while run:
                 
         for index, character_value in enumerate(character_values):
             if character_value:
-                screen.blit(eval(f'background_character_{index + 1}'), (0, 0))  # Dynamically access background
+                screen.blit(eval(f'background_character_{index + 1}'), (0, 0))
                 button_play.draw(screen)
                 button_back.draw(screen)
 
