@@ -72,7 +72,23 @@ class character1(pygame.sprite.Sprite):
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
 
 player = character1(55, 288, 5, 2)
-enemy = character1(55, 288, 5, 2)
+
+# Enemy
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self,x, y, scale, speed):
+        self.speed = speed
+        self.direction = 1
+        self.flip = False
+        pygame.sprite.Sprite.__init__(self)
+        self.enemy_1 = pygame.image.load("Image/ghost_2.png").convert_alpha()
+        self.enemy_1_rect = self.enemy_1.get_rect()
+        self.enemy_1_rect.center = (x, y)
+    def draw(self):
+        #false part is used for fliping to not be upside down
+        screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
+
+enemy = Enemy(630, 275, 5, 2)
+
 
 def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
