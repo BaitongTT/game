@@ -15,12 +15,12 @@ width, length = screen.get_size() #get the windows size
 movetothe_left = False
 movetothe_right = False
 
-class character1(pygame.sprite.Sprite):
+class character(pygame.sprite.Sprite):
     def __init__(self,x, y, scale, speed):
+        pygame.sprite.Sprite.__init__(self)
         self.speed = speed
         self.direction = 1
         self.flip = False
-        pygame.sprite.Sprite.__init__(self)
         self.char_1 = pygame.image.load("Image/character_1.png").convert_alpha()
         self.char_1_rect = self.char_1.get_rect()
         self.char_1_rect.center = (x, y)
@@ -31,8 +31,11 @@ class character1(pygame.sprite.Sprite):
         self.gravity = 0.5
         self.jump_force = -12
         self.ground_y = 288  
+        self.old_x = self.char_1_rect.x
+        self.old_y = self.char_1_rect.y
     
-    def move(self, movetothe_left, movetothe_right):
+    def move(self, movetothe_left, movetothe_right,dirt_blocks):
+        
         change_x = 0
         if (movetothe_left):
             change_x = -self.speed
@@ -45,34 +48,52 @@ class character1(pygame.sprite.Sprite):
 
         #update position
         self.char_1_rect.x += change_x
+        
+        for block in dirt_blocks: # Check for collisions with blocks
+            if self.char_1_rect.colliderect(block.rect):
+                self.char_1_rect.x = self.old_x
+                break
 
         if self.char_1_rect.left < 0:  #dont go out of the left side
             self.char_1_rect.left = 0
         if self.char_1_rect.right > 720:  #dont go out of the right side
             self.char_1_rect.right = 720
 
-    def update_jump(self):
+    def update_jump(self,dirt_blocks):
         # update jumping
         if self.jumping or self.char_1_rect.centery < self.ground_y:
             self.char_1_rect.centery += self.vertical_velocity
             self.vertical_velocity += self.gravity
-            
-            if self.char_1_rect.centery >= self.ground_y:
-                self.char_1_rect.centery = self.ground_y
-                self.jumping = False
-                self.vertical_velocity = 0
                 
+            for block in dirt_blocks: # Check for vertical collisions with blocks
+                if self.char_1_rect.colliderect(block.rect):
+                    if self.vertical_velocity > 0:
+                        self.char_1_rect.bottom = block.rect.top
+                        self.jumping = False
+                        self.vertical_velocity = 0
+                    elif self.vertical_velocity < 0:
+                        self.char_1_rect.top = block.rect.bottom
+                        self.vertical_velocity = 0
+                        break
+                if self.char_1_rect.centery >= self.ground_y:
+                    self.char_1_rect.centery = self.ground_y
+                    self.jumping = False
+                    self.vertical_velocity = 0
     def jump(self):
         if not self.jumping:
             self.jumping = True
             self.vertical_velocity = self.jump_force
 
     def draw(self):
-        #false part is used for fliping to not be upside down
+        # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
 
-player = character1(55, 288, 5, 2)
-enemy = character1(55, 288, 5, 2)
+# sprite groups
+all_sprites = pygame.sprite.Group()
+obstacles = pygame.sprite.Group()
+
+player = character(55, 288, 5, 2)
+#enemy = character1(55, 288, 5, 2)
 
 def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
@@ -142,9 +163,9 @@ while run:
     clock.tick(FPS)
     screen.blit(background, (0,0))
     player.draw()
-    enemy.draw()
-    player.update_jump()
-    player.move(movetothe_left, movetothe_right)
+    #enemy.draw()
+    player.update_jump(dirt_blocks)
+    player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
 
