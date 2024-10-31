@@ -95,11 +95,30 @@ obstacles = pygame.sprite.Group()
 player = character(55, 288, 5, 2)
 #enemy = character1(55, 288, 5, 2)
 
+# Enemy
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self,x, y, scale, speed):
+        self.speed = speed
+        self.direction = 1
+        self.flip = False
+        pygame.sprite.Sprite.__init__(self)
+        self.enemy_1 = pygame.image.load("Image/ghost_2.png").convert_alpha()
+        self.enemy_1_rect = self.enemy_1.get_rect()
+        self.enemy_1_rect.center = (x, y)
+    def draw(self):
+        #false part is used for fliping to not be upside down
+        screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
+
+enemy = Enemy(630, 275, 5, 2)
+
+
+
 def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
-background = load_and_scale_image("Image/background_2.png", 1)
+background2 = load_and_scale_image("Image/background_2.png", 1)
+'''background3 = load_and_scale_image("", 1)'''
 
 class DirtBlock(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -161,7 +180,8 @@ def move_objects_for_right(speed, move):
 run = True
 while run:
     clock.tick(FPS)
-    screen.blit(background, (0,0))
+    screen.blit(background2, (0,0))
+    '''screen.blit(background3, (9000,0))'''
     player.draw()
     #enemy.draw()
     player.update_jump(dirt_blocks)
