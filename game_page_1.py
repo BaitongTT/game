@@ -26,15 +26,12 @@ character_1 = Button("Image/1_charecter.png",(60,133))
 character_2 = Button("Image/2_charecter.png",(269,135))
 character_3 = Button("Image/3_charecter.png",(479,135))
 button_back = Button("Image/button_back.png",(252,327))
-button__play = Button("Image/button_play.png",(365,327))
+button_play = Button("Image/button_play.png",(365,327))
 
 
 # variable
 button_value = False
-select_characters_value = False
-character_value_1 = False
-character_value_2 = False
-character_value_3 = False
+character_values = [False, False, False]
 back_value = False
 play_value = False
 
@@ -46,64 +43,39 @@ while run:
     screen.blit(background_start,(0,0))
     button_start.draw(screen)
     #button start
-    while True:
-        if button_start.is_pressed():
-            button_value = True
-        if button_value == True:
-            screen.blit(select_characters,(0,0))
-            character_1.draw(screen)
-            character_2.draw(screen)
-            character_3.draw(screen)
-            
-            if character_1.is_pressed():
-                character_value_1 = True
-                break
-            elif character_2.is_pressed():
-                character_value_2 = True
-                break
-            elif character_3.is_pressed():
-                character_value_3 = True
+    if button_start.is_pressed():
+        button_value = True
+    if button_value == True:
+        screen.blit(select_characters,(0,0))
+        characters = [character_1, character_2, character_3]
+        for index, character in enumerate(characters):
+            character.draw(screen)
+            if character.is_pressed():
+                character_values[index] = True
                 break
                 
-        if character_value_1 == True:
-            screen.blit(background_character_1,(0,0))
-            button__play.draw(screen)
-            button_back.draw(screen)
-            if button_back.is_pressed():
-                back_value = True
-            elif button__play.is_pressed():
-                play_value = True
-                break
-            
-        if character_value_2 == True:
-            screen.blit(background_character_2,(0,0))
-            button__play.draw(screen)
-            button_back.draw(screen)
-            if button_back.is_pressed():
-                back_value = True
-                break
-            elif button__play.is_pressed():
-                play_value = True
-                break
-        if character_value_3 == True:
-            screen.blit(background_character_3,(0,0))
-            button__play.draw(screen)
-            button_back.draw(screen)
-            if button_back.is_pressed():
-                back_value = True
-            elif button__play.is_pressed():
-                play_value = True
-            
-        if back_value == True:
-            button_value = True
-        if play_value == True:
-            print(111)
-            break
+        for index, character_value in enumerate(character_values):
+            if character_value:
+                screen.blit(eval(f'background_character_{index + 1}'), (0, 0))  # Dynamically access background
+                button_play.draw(screen)
+                button_back.draw(screen)
 
-        
-    
-        
-        
+                if button_back.is_pressed():
+                    back_value = True
+                    break
+                elif button_play.is_pressed():
+                    play_value = True
+                    break
+            
+    if back_value:
+        button_value = True
+        character_values = [False, False, False]  
+        back_value = False
+
+    if play_value:
+        print(111)
+        break
+  
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False

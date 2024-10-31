@@ -94,7 +94,8 @@ def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
-background = load_and_scale_image("Image/background_2.png", 1)
+background2 = load_and_scale_image("Image/background_2.png", 1)
+'''background3 = load_and_scale_image("", 1)'''
 
 class DirtBlock(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -156,7 +157,8 @@ def move_objects_for_right(speed, move):
 run = True
 while run:
     clock.tick(FPS)
-    screen.blit(background, (0,0))
+    screen.blit(background2, (0,0))
+    '''screen.blit(background3, (9000,0))'''
     player.draw()
     enemy.draw()
     player.update_jump()
