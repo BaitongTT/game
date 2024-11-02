@@ -24,6 +24,7 @@ class character(pygame.sprite.Sprite):
         self.char_1 = pygame.image.load("Image/character_1.png").convert_alpha()
         self.char_1_rect = self.char_1.get_rect()
         self.char_1_rect.center = (x, y)
+        self.move_counter = 0
         
         # properties for jumping
         self.jumping = False
@@ -91,9 +92,9 @@ class character(pygame.sprite.Sprite):
 # sprite groups
 all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
 
 player = character(55, 288, 5, 2)
-#enemy = character1(55, 288, 5, 2)
 
 # Enemy
 class Enemy(pygame.sprite.Sprite):
@@ -109,8 +110,24 @@ class Enemy(pygame.sprite.Sprite):
         #false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
 
-enemy = Enemy(630, 275, 5, 2)
+enemy_1 = Enemy(640, 275, 5, 2)
+enemy_2 = Enemy(535, 275, 5, 2)
+enemy_group.add(enemy_1)
+enemy_group.add(enemy_2)
 
+# The enemy walks around
+def ai(self):
+    if self.alive and player.alive:
+        if self.direction == 1 :
+            ai_movetothe_right = True
+        else :
+            ai_movetothe_right = False
+        ai_movetothe_left = not ai_movetothe_right
+        self.move(ai_movetothe_left,ai_movetothe_right)
+        self.move_counter += 1
+        if self.move_counter > block :
+            self.direction *= -1
+            self.move_counter *= -1
 
 
 def load_and_scale_image(path, scale):
@@ -183,7 +200,9 @@ while run:
     screen.blit(background2, (0,0))
     '''screen.blit(background3, (9000,0))'''
     player.draw()
-    #enemy.draw()
+    for enemy in enemy_group :
+        enemy.draw()
+        '''enemy.ai()'''
     player.update_jump(dirt_blocks)
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
