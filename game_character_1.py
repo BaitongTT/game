@@ -155,6 +155,12 @@ class LavaBlock(pygame.sprite.Sprite):
         self.image = load_and_scale_image("Image/lava.png", 1)  
         self.rect = self.image.get_rect(topleft=(x, y))
 
+class Item(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
+        super().__init__()
+        self.image = load_and_scale_image("Image/block_2.png", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))
+
 #the floor section
 dirt_blocks = pygame.sprite.Group()
 for i in range(0, 18500, 71):  # start, how long, space (dirt = 40, lava = 71)
@@ -164,7 +170,6 @@ for i in range(0, 18500, 71):  # start, how long, space (dirt = 40, lava = 71)
 
 #blocks for the frist session
 def create_blocks_1(start_x, y_pos, count): 
-    #y = 361(first(floor)), 300(second), 240(third), 180(forth)
     for step in range(count):
         x_position = start_x + (step * 40)
         block = DirtBlock(x_position, y_pos, 9)
@@ -172,12 +177,19 @@ def create_blocks_1(start_x, y_pos, count):
 
 #blocks for the second session
 def create_blocks_2(start_x, y_pos, count): 
-    #y = 361(first(floor)), 300(second), 240(third), 180(forth)
     for step in range(count):
         x_position = start_x + (step * 40)
         block = DirtBlock_2(x_position, y_pos, 9)
         dirt_blocks.add(block)
         
+#item
+def create_item(start_x, y_pos, count): 
+    for step in range(count):
+        x_position = start_x + (step * 40)
+        item = Item(x_position, y_pos, 9)
+        dirt_blocks.add(item)
+        
+#y = 361(first(floor)), 300(second), 240(third), 180(forth)
 #the last number is number of blocks
 #the first 9000 blocks is the first session
 #the second 9000 blocks is the second session
@@ -186,6 +198,7 @@ create_blocks_1(0, 361, 6)
 create_blocks_1(300, 300, 6)
 create_blocks_1(540, 240, 5)
 create_blocks_1(780, 361, 12)
+create_item(1140, 317, 1)
 create_blocks_1(1300, 300, 10)
 create_blocks_1(1840, 240, 14)
 create_blocks_1(2500, 300, 10)
@@ -194,12 +207,14 @@ create_blocks_1(3220, 180, 15)
 create_blocks_1(4000, 300, 10)
 create_blocks_1(4400, 240, 9)
 create_blocks_1(4800, 361, 6)
+create_item(4960, 317, 1)
 create_blocks_1(5040, 300, 5)
 create_blocks_1(5240, 240, 15)
 create_blocks_1(6000, 300, 8)
 create_blocks_1(6320, 240, 3)
 create_blocks_1(6440, 180, 15)
 create_blocks_1(7040, 240, 8)
+create_item(7300, 196, 1)
 create_blocks_1(7360, 180, 8)
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
