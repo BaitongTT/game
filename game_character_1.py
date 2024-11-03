@@ -135,8 +135,8 @@ def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
-background2 = load_and_scale_image("Image/background_2.png", 1)
-'''background3 = load_and_scale_image("", 1)'''
+background2 = load_and_scale_image("Image/background_2.png", 1).convert()
+#background3 = load_and_scale_image("Image/background_1.png", 1).convert()
 
 class DirtBlock(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -144,52 +144,113 @@ class DirtBlock(pygame.sprite.Sprite):
         self.image = load_and_scale_image("Image/block.png", 1)
         self.rect = self.image.get_rect(topleft=(x, y))
 
-'''class LavaBlock(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+class DirtBlock_2(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
         super().__init__()
-        self.image = load_and_scale_image(" ", 1)  
-        self.rect = self.image.get_rect(topleft=(x, y))'''
+        self.image = load_and_scale_image("Image/block_2.png", 1)
+        self.rect = self.image.get_rect(topleft=(x, y))
 
-# Create a group for dirt blocks
+class LavaBlock(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
+        super().__init__()
+        self.image = load_and_scale_image("Image/lava.png", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+class Item(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
+        super().__init__()
+        self.image = load_and_scale_image("Image/block_2.png", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+#the floor section
 dirt_blocks = pygame.sprite.Group()
-
-# Add multiple dirt blocks to the group
-for i in range(0, 9000, 40):  # start, how long, space
-    '''if random.random() < 0.2:  #assign percent for create lave blocks
-        block = LavaBlock(i, 361)
-    else:
-        block = DirtBlock(i, 361)
-    blocks.add(block)'''
-    block = DirtBlock(i, 361, 9)
+for i in range(0, 18500, 71):  # start, how long, space (dirt = 40, lava = 71)
+    #block = DirtBlock(i, 361, 9)
+    block = LavaBlock(i, 361, 9)
     dirt_blocks.add(block)
 
-#floating blocks
-def create_floating_blocks(start_x, y_pos, count): #y = 290 is the second floor, y = 220 is the third floor
+#blocks for the frist session
+def create_blocks_1(start_x, y_pos, count): 
     for step in range(count):
         x_position = start_x + (step * 40)
         block = DirtBlock(x_position, y_pos, 9)
         dirt_blocks.add(block)
-create_floating_blocks(300, 290, 6)
-create_floating_blocks(1000, 290, 10)
-create_floating_blocks(1700, 290, 6)
-create_floating_blocks(1950, 220, 9)
-create_floating_blocks(2500, 290, 10)
-create_floating_blocks(2900, 220, 8)
-create_floating_blocks(3220, 150, 15)
-create_floating_blocks(4000, 290, 10)
-create_floating_blocks(4400, 220, 10)
-create_floating_blocks(5000, 290, 6)
-create_floating_blocks(5250, 220, 15)
-create_floating_blocks(6000, 290, 8)
-create_floating_blocks(6320, 220, 3)
-create_floating_blocks(6450, 150, 15)
-create_floating_blocks(7100, 220, 5)
-create_floating_blocks(7350, 150, 8)
-create_floating_blocks(7700, 220, 5)
-create_floating_blocks(8000, 290, 15)
+
+#blocks for the second session
+def create_blocks_2(start_x, y_pos, count): 
+    for step in range(count):
+        x_position = start_x + (step * 40)
+        block = DirtBlock_2(x_position, y_pos, 9)
+        dirt_blocks.add(block)
+        
+#item
+def create_item(start_x, y_pos, count): 
+    for step in range(count):
+        x_position = start_x + (step * 40)
+        item = Item(x_position, y_pos, 9)
+        dirt_blocks.add(item)
+        
+#y = 361(first(floor)), 300(second), 240(third), 180(forth)
+#the last number is number of blocks
+#the first 9000 blocks is the first session
+#the second 9000 blocks is the second session
+#the last 500 blocks is the end
+create_blocks_1(0, 361, 6)
+create_blocks_1(300, 300, 6)
+create_blocks_1(540, 240, 5)
+create_blocks_1(780, 361, 12)
+create_item(1140, 317, 1)
+create_blocks_1(1300, 300, 10)
+create_blocks_1(1840, 240, 14)
+create_blocks_1(2500, 300, 10)
+create_blocks_1(2900, 240, 8)
+create_blocks_1(3220, 180, 15)
+create_blocks_1(4000, 300, 10)
+create_blocks_1(4400, 240, 9)
+create_blocks_1(4800, 361, 6)
+create_item(4960, 317, 1)
+create_blocks_1(5040, 300, 5)
+create_blocks_1(5240, 240, 15)
+create_blocks_1(6000, 300, 8)
+create_blocks_1(6320, 240, 3)
+create_blocks_1(6440, 180, 15)
+create_blocks_1(7040, 240, 8)
+create_item(7300, 196, 1)
+create_blocks_1(7360, 180, 8)
+create_blocks_1(7680, 240, 6)
+create_blocks_1(7920, 300, 15)
+create_blocks_1(8520, 361, 12)
+#end of first session
+
+create_blocks_2(9000, 361, 5)
+create_blocks_2(9200, 300, 6)
+create_blocks_2(9440, 240, 4)
+create_blocks_2(9600, 300, 8)
+create_blocks_2(10000, 240, 8)
+create_blocks_2(10320, 180, 6)
+create_blocks_2(10560, 240, 10)
+create_blocks_2(10960, 180, 14)
+create_blocks_2(11560, 361, 5)
+create_blocks_2(11760, 300, 5)
+create_blocks_2(11960, 240, 15)
+create_blocks_2(12560, 300, 5)
+create_blocks_2(12760, 361, 10)
+create_blocks_2(13200, 300, 8)
+create_blocks_2(13520, 240, 8)
+create_blocks_2(13840, 180, 15)
+create_blocks_2(14440, 240, 5)
+create_blocks_2(14640, 300, 10)
+create_blocks_2(15040, 361, 15)
+create_blocks_2(15680, 300, 8)
+create_blocks_2(16000, 240, 8)
+create_blocks_2(16320, 180, 20)
+create_blocks_2(17120, 240, 6)
+create_blocks_2(17480, 240, 6)
+create_blocks_2(17720, 300, 9)
+create_blocks_2(18080, 361, 12)
 
 #moving objects
-speed = 5
+speed = 10
 def move_objects_for_right(speed, move):
     if move:
         for block in dirt_blocks:
@@ -198,8 +259,9 @@ def move_objects_for_right(speed, move):
 run = True
 while run:
     clock.tick(FPS)
+    screen.fill((0,0,0))
     screen.blit(background2, (0,0))
-    '''screen.blit(background3, (9000,0))'''
+    #screen.blit(background3, (9000,0))
     player.draw()
     for enemy in enemy_group :
         enemy.draw()
