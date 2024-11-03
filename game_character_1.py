@@ -134,8 +134,8 @@ def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
-background2 = load_and_scale_image("Image/background_2.png", 1)
-'''background3 = load_and_scale_image("", 1)'''
+background2 = load_and_scale_image("Image/background_2.png", 1).convert()
+#background3 = load_and_scale_image("Image/background_1.png", 1).convert()
 
 class DirtBlock(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -143,49 +143,62 @@ class DirtBlock(pygame.sprite.Sprite):
         self.image = load_and_scale_image("Image/block.png", 1)
         self.rect = self.image.get_rect(topleft=(x, y))
 
-'''class LavaBlock(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+class LavaBlock(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
         super().__init__()
-        self.image = load_and_scale_image(" ", 1)  
-        self.rect = self.image.get_rect(topleft=(x, y))'''
+        self.image = load_and_scale_image("Image/lava.png", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))
 
-# Create a group for dirt blocks
+#the floor section
 dirt_blocks = pygame.sprite.Group()
-
-# Add multiple dirt blocks to the group
-for i in range(0, 9000, 40):  # start, how long, space
-    '''if random.random() < 0.2:  #assign percent for create lave blocks
-        block = LavaBlock(i, 361)
-    else:
-        block = DirtBlock(i, 361)
-    blocks.add(block)'''
-    block = DirtBlock(i, 361, 9)
+for i in range(0, 18000, 71):  # start, how long, space (dirt = 40, lava = 71)
+    #block = DirtBlock(i, 361, 9)
+    block = LavaBlock(i, 361, 9)
     dirt_blocks.add(block)
 
 #floating blocks
-def create_floating_blocks(start_x, y_pos, count): #y = 290 is the second floor, y = 220 is the third floor
+def create_blocks(start_x, y_pos, count): 
+    #y = 361(first(floor)), 300(second), 240(third), 180(forth)
     for step in range(count):
         x_position = start_x + (step * 40)
         block = DirtBlock(x_position, y_pos, 9)
         dirt_blocks.add(block)
-create_floating_blocks(300, 300, 6)
-create_floating_blocks(1000, 300, 10)
-create_floating_blocks(1700, 300, 6)
-create_floating_blocks(1950, 240, 9)
-create_floating_blocks(2500, 300, 10)
-create_floating_blocks(2900, 240, 8)
-create_floating_blocks(3220, 180, 15)
-create_floating_blocks(4000, 300, 10)
-create_floating_blocks(4400, 240, 10)
-create_floating_blocks(5000, 300, 6)
-create_floating_blocks(5250, 240, 15)
-create_floating_blocks(6000, 300, 8)
-create_floating_blocks(6320, 220, 3)
-create_floating_blocks(6450, 180, 15)
-create_floating_blocks(7100, 240, 5)
-create_floating_blocks(7350, 180, 8)
-create_floating_blocks(7700, 240, 5)
-create_floating_blocks(8000, 300, 15)
+#the last number is number of blocks
+#the first 9000 blocks is the first session
+#the second 9000 blocks is the second session
+create_blocks(0, 361, 6)
+create_blocks(300, 300, 6)
+create_blocks(540, 240, 6)
+create_blocks(900, 300, 5)
+create_blocks(1300, 300, 6)
+create_blocks(1700, 300, 6)
+create_blocks(1940, 240, 9)
+create_blocks(2500, 300, 10)
+create_blocks(2900, 240, 8)
+create_blocks(3220, 180, 15)
+create_blocks(4000, 300, 10)
+create_blocks(4400, 240, 10)
+create_blocks(5000, 300, 6)
+create_blocks(5240, 240, 15)
+create_blocks(6000, 300, 8)
+create_blocks(6320, 240, 3)
+create_blocks(6440, 180, 15)
+create_blocks(7040, 240, 8)
+create_blocks(7360, 180, 8)
+create_blocks(7680, 240, 6)
+create_blocks(7920, 300, 15)
+
+#end of first session
+create_blocks(9600, 300, 10)
+create_blocks(10000, 240, 8)
+create_blocks(10320, 180, 6)
+create_blocks(10560, 240, 10)
+create_blocks(10960, 180, 20)
+create_blocks(11760, 240, 5)
+create_blocks(11960, 300, 15)
+create_blocks(12900, 300, 8)
+create_blocks(13220, 240, 10)
+create_blocks(13620, 180, 10)
 
 #moving objects
 speed = 5
@@ -197,8 +210,9 @@ def move_objects_for_right(speed, move):
 run = True
 while run:
     clock.tick(FPS)
+    screen.fill((0,0,0))
     screen.blit(background2, (0,0))
-    '''screen.blit(background3, (9000,0))'''
+    #screen.blit(background3, (9000,0))
     player.draw()
     for enemy in enemy_group :
         enemy.draw()
