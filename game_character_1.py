@@ -163,6 +163,7 @@ def create_blocks(start_x, y_pos, count):
         x_position = start_x + (step * 40)
         block = DirtBlock(x_position, y_pos, 9)
         dirt_blocks.add(block)
+        
 #the last number is number of blocks
 #the first 9000 blocks is the first session
 #the second 9000 blocks is the second session
@@ -188,8 +189,8 @@ create_blocks(7040, 240, 8)
 create_blocks(7360, 180, 8)
 create_blocks(7680, 240, 6)
 create_blocks(7920, 300, 15)
-
 #end of first session
+
 create_blocks(9600, 300, 10)
 create_blocks(10000, 240, 8)
 create_blocks(10320, 180, 6)
