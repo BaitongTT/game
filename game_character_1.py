@@ -203,9 +203,13 @@ create_blocks_1(7040, 240, 8)
 create_blocks_1(7360, 180, 8)
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
+create_blocks_1(8520, 361, 12)
 #end of first session
 
-create_blocks_2(9600, 300, 10)
+create_blocks_2(9000, 361, 5)
+create_blocks_2(9200, 300, 6)
+create_blocks_2(9440, 240, 4)
+create_blocks_2(9600, 300, 8)
 create_blocks_2(10000, 240, 8)
 create_blocks_2(10320, 180, 6)
 create_blocks_2(10560, 240, 10)
@@ -230,7 +234,7 @@ create_blocks_2(17720, 300, 9)
 create_blocks_2(18080, 361, 12)
 
 #moving objects
-speed = 5
+speed = 10
 def move_objects_for_right(speed, move):
     if move:
         for block in dirt_blocks:
