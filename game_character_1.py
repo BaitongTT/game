@@ -151,7 +151,7 @@ class LavaBlock(pygame.sprite.Sprite):
 
 #the floor section
 dirt_blocks = pygame.sprite.Group()
-for i in range(0, 18000, 71):  # start, how long, space (dirt = 40, lava = 71)
+for i in range(0, 18500, 71):  # start, how long, space (dirt = 40, lava = 71)
     #block = DirtBlock(i, 361, 9)
     block = LavaBlock(i, 361, 9)
     dirt_blocks.add(block)
@@ -166,19 +166,20 @@ def create_blocks(start_x, y_pos, count):
 #the last number is number of blocks
 #the first 9000 blocks is the first session
 #the second 9000 blocks is the second session
+#the last 500 blocks is the end
 create_blocks(0, 361, 6)
 create_blocks(300, 300, 6)
-create_blocks(540, 240, 6)
-create_blocks(900, 300, 5)
-create_blocks(1300, 300, 6)
-create_blocks(1700, 300, 6)
-create_blocks(1940, 240, 9)
+create_blocks(540, 240, 5)
+create_blocks(780, 361, 12)
+create_blocks(1300, 300, 10)
+create_blocks(1840, 240, 14)
 create_blocks(2500, 300, 10)
 create_blocks(2900, 240, 8)
 create_blocks(3220, 180, 15)
 create_blocks(4000, 300, 10)
-create_blocks(4400, 240, 10)
-create_blocks(5000, 300, 6)
+create_blocks(4400, 240, 9)
+create_blocks(4800, 361, 6)
+create_blocks(5040, 300, 5)
 create_blocks(5240, 240, 15)
 create_blocks(6000, 300, 8)
 create_blocks(6320, 240, 3)
@@ -193,15 +194,28 @@ create_blocks(9600, 300, 10)
 create_blocks(10000, 240, 8)
 create_blocks(10320, 180, 6)
 create_blocks(10560, 240, 10)
-create_blocks(10960, 180, 20)
-create_blocks(11760, 240, 5)
-create_blocks(11960, 300, 15)
-create_blocks(12900, 300, 8)
-create_blocks(13220, 240, 10)
-create_blocks(13620, 180, 10)
+create_blocks(10960, 180, 14)
+create_blocks(11560, 361, 5)
+create_blocks(11760, 300, 5)
+create_blocks(11960, 240, 15)
+create_blocks(12560, 300, 5)
+create_blocks(12760, 361, 10)
+create_blocks(13200, 300, 8)
+create_blocks(13520, 240, 8)
+create_blocks(13840, 180, 15)
+create_blocks(14440, 240, 5)
+create_blocks(14640, 300, 10)
+create_blocks(15040, 361, 15)
+create_blocks(15680, 300, 8)
+create_blocks(16000, 240, 8)
+create_blocks(16320, 180, 20)
+create_blocks(17120, 240, 6)
+create_blocks(17480, 240, 6)
+create_blocks(17720, 300, 9)
+create_blocks(18080, 361, 12)
 
 #moving objects
-speed = 5
+speed = 10
 def move_objects_for_right(speed, move):
     if move:
         for block in dirt_blocks:
