@@ -24,7 +24,6 @@ class character(pygame.sprite.Sprite):
         self.char_1 = pygame.image.load("Image/character_1.png").convert_alpha()
         self.char_1_rect = self.char_1.get_rect()
         self.char_1_rect.center = (x, y)
-        self.move_counter = 0
         
         # properties for jumping
         self.jumping = False
@@ -36,7 +35,6 @@ class character(pygame.sprite.Sprite):
         self.old_y = self.char_1_rect.y
     
     def move(self, movetothe_left, movetothe_right,dirt_blocks):
-        
         change_x = 0
         if (movetothe_left):
             change_x = -self.speed
@@ -102,10 +100,13 @@ class Enemy(pygame.sprite.Sprite):
         self.speed = speed
         self.direction = 1
         self.flip = False
+        self.move_counter = 0
+        self.alive = True
         pygame.sprite.Sprite.__init__(self)
         self.enemy_1 = pygame.image.load("Image/ghost_2.png").convert_alpha()
         self.enemy_1_rect = self.enemy_1.get_rect()
         self.enemy_1_rect.center = (x, y)
+        
     def draw(self):
         #false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
@@ -114,7 +115,6 @@ enemy_1 = Enemy(640, 275, 5, 2)
 enemy_2 = Enemy(535, 275, 5, 2)
 enemy_group.add(enemy_1)
 enemy_group.add(enemy_2)
-
 # The enemy walks around
 def ai(self):
     if self.alive and player.alive:
@@ -124,8 +124,9 @@ def ai(self):
             ai_movetothe_right = False
         ai_movetothe_left = not ai_movetothe_right
         self.move(ai_movetothe_left,ai_movetothe_right)
+        self.update_action(1)
         self.move_counter += 1
-        if self.move_counter > block :
+        if self.move_counter > 40 :
             self.direction *= -1
             self.move_counter *= -1
 
