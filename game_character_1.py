@@ -215,7 +215,7 @@ create_blocks(17720, 300, 9)
 create_blocks(18080, 361, 12)
 
 #moving objects
-speed = 10
+speed = 5
 def move_objects_for_right(speed, move):
     if move:
         for block in dirt_blocks:
