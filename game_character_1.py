@@ -30,11 +30,14 @@ class character(pygame.sprite.Sprite):
         self.vertical_velocity = 0
         self.gravity = 0.5
         self.jump_force = -12
-        self.ground_y = 288  
+        self.ground_y = 305  
         self.old_x = self.char_1_rect.x
         self.old_y = self.char_1_rect.y
+        self.on_ground = False
     
     def move(self, movetothe_left, movetothe_right,dirt_blocks):
+        self.old_x = self.char_1_rect.x
+        self.old_y = self.char_1_rect.y
         change_x = 0
         if (movetothe_left):
             change_x = -self.speed
@@ -59,29 +62,32 @@ class character(pygame.sprite.Sprite):
             self.char_1_rect.right = 720
 
     def update_jump(self,dirt_blocks):
+        self.on_ground = False
+        self.vertical_velocity += self.gravity
+        self.char_1_rect.y += self.vertical_velocity
         # update jumping
-        if self.jumping or self.char_1_rect.centery < self.ground_y:
-            self.char_1_rect.centery += self.vertical_velocity
-            self.vertical_velocity += self.gravity
                 
-            for block in dirt_blocks: # Check for vertical collisions with blocks
+        for block in dirt_blocks: # Check for vertical collisions with blocks
                 if self.char_1_rect.colliderect(block.rect):
                     if self.vertical_velocity > 0:
                         self.char_1_rect.bottom = block.rect.top
+                        self.on_ground = True
                         self.jumping = False
                         self.vertical_velocity = 0
                     elif self.vertical_velocity < 0:
                         self.char_1_rect.top = block.rect.bottom
                         self.vertical_velocity = 0
-                        break
-                if self.char_1_rect.centery >= self.ground_y:
+                        
+        if self.char_1_rect.centery >= self.ground_y:
                     self.char_1_rect.centery = self.ground_y
+                    self.on_ground = True
                     self.jumping = False
                     self.vertical_velocity = 0
     def jump(self):
-        if not self.jumping:
+        if self.on_ground and not self.jumping:
             self.jumping = True
             self.vertical_velocity = self.jump_force
+            self.on_ground = True
 
     def draw(self):
         # false part is used for fliping to not be upside down
@@ -92,7 +98,7 @@ all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 
-player = character(55, 288, 5, 2)
+player = character(55, 305, 5, 2)
 
 # Enemy
 class Enemy(pygame.sprite.Sprite):
@@ -149,8 +155,10 @@ def load_and_scale_image(path, scale):
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
 background2 = load_and_scale_image("Image/background_2.png", 1).convert()
-#background3 = load_and_scale_image("Image/background_1.png", 1).convert()
+background3 = load_and_scale_image("Image/background_3.png", 1).convert()
 
+
+#BLOCKS
 class DirtBlock(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
         super().__init__()
@@ -169,10 +177,29 @@ class LavaBlock(pygame.sprite.Sprite):
         self.image = load_and_scale_image("Image/lava.png", 1)  
         self.rect = self.image.get_rect(topleft=(x, y))
 
-class Item(pygame.sprite.Sprite):
+#ITEMS
+class Item_1(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
         super().__init__()
-        self.image = load_and_scale_image("Image/block_2.png", 1)  
+        self.image = load_and_scale_image("Image/item_1.png", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+class Item_2(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
+        super().__init__()
+        self.image = load_and_scale_image("Image/item_2.png", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+class Item_3(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
+        super().__init__()
+        self.image = load_and_scale_image("Image/item_3.png", 1)  
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+class Item_4(pygame.sprite.Sprite):
+    def __init__(self, x, y, scale):
+        super().__init__()
+        self.image = load_and_scale_image("Image/item_4.png", 1)  
         self.rect = self.image.get_rect(topleft=(x, y))
 
 #the floor section
@@ -196,13 +223,32 @@ def create_blocks_2(start_x, y_pos, count):
         block = DirtBlock_2(x_position, y_pos, 9)
         dirt_blocks.add(block)
         
-#item
-def create_item(start_x, y_pos, count): 
+#items
+def create_item_1(start_x, y_pos, count): 
     for step in range(count):
         x_position = start_x + (step * 40)
-        item = Item(x_position, y_pos, 9)
+        item = Item_1(x_position, y_pos, 9)
         dirt_blocks.add(item)
-        
+
+def create_item_2(start_x, y_pos, count): 
+    for step in range(count):
+        x_position = start_x + (step * 40)
+        item = Item_2(x_position, y_pos, 9)
+        dirt_blocks.add(item)
+
+def create_item_3(start_x, y_pos, count): 
+    for step in range(count):
+        x_position = start_x + (step * 40)
+        item = Item_3(x_position, y_pos, 9)
+        dirt_blocks.add(item)
+
+def create_item_4(start_x, y_pos, count): 
+    for step in range(count):
+        x_position = start_x + (step * 40)
+        item = Item_4(x_position, y_pos, 9)
+        dirt_blocks.add(item)
+
+
 #y = 361(first(floor)), 300(second), 240(third), 180(forth)
 #the last number is number of blocks
 #the first 9000 blocks is the first session
@@ -212,7 +258,7 @@ create_blocks_1(0, 361, 6)
 create_blocks_1(300, 300, 6)
 create_blocks_1(540, 240, 5)
 create_blocks_1(780, 361, 12)
-create_item(1140, 317, 1)
+create_item_4(1140, 298, 1) #item_4
 create_blocks_1(1300, 300, 10)
 create_blocks_1(1840, 240, 14)
 create_blocks_1(2500, 300, 10)
@@ -221,14 +267,14 @@ create_blocks_1(3220, 180, 15)
 create_blocks_1(4000, 300, 10)
 create_blocks_1(4400, 240, 9)
 create_blocks_1(4800, 361, 6)
-create_item(4960, 317, 1)
+create_item_1(4960, 298, 1) #item_1
 create_blocks_1(5040, 300, 5)
 create_blocks_1(5240, 240, 15)
 create_blocks_1(6000, 300, 8)
 create_blocks_1(6320, 240, 3)
 create_blocks_1(6440, 180, 15)
 create_blocks_1(7040, 240, 8)
-create_item(7300, 196, 1)
+create_item_2(7300, 177, 1) #item_2
 create_blocks_1(7360, 180, 8)
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
@@ -236,6 +282,7 @@ create_blocks_1(8520, 361, 12)
 #end of first session
 
 create_blocks_2(9000, 361, 5)
+create_item_3(9120, 298, 1) #item_3
 create_blocks_2(9200, 300, 6)
 create_blocks_2(9440, 240, 4)
 create_blocks_2(9600, 300, 8)
@@ -248,22 +295,25 @@ create_blocks_2(11760, 300, 5)
 create_blocks_2(11960, 240, 15)
 create_blocks_2(12560, 300, 5)
 create_blocks_2(12760, 361, 10)
+create_item_1(13080, 298, 1) #item_1
 create_blocks_2(13200, 300, 8)
 create_blocks_2(13520, 240, 8)
 create_blocks_2(13840, 180, 15)
 create_blocks_2(14440, 240, 5)
 create_blocks_2(14640, 300, 10)
 create_blocks_2(15040, 361, 15)
+create_item_4(15440, 298, 1) #item_4
 create_blocks_2(15680, 300, 8)
 create_blocks_2(16000, 240, 8)
 create_blocks_2(16320, 180, 20)
 create_blocks_2(17120, 240, 6)
 create_blocks_2(17480, 240, 6)
 create_blocks_2(17720, 300, 9)
-create_blocks_2(18080, 361, 12)
+create_blocks_2(18080, 361, 30)
 
 #moving objects
-speed = 10
+speed = 4
+scroll_x = 0 
 def move_objects_for_right(speed, move):
     if move:
         for block in dirt_blocks:
@@ -273,8 +323,13 @@ run = True
 while run:
     clock.tick(FPS)
     screen.fill((0,0,0))
-    screen.blit(background2, (0,0))
-    #screen.blit(background3, (9000,0))
+    if movetothe_right:
+        move_objects_for_right(speed, movetothe_right)
+        scroll_x += speed
+    if player.char_1_rect.x < 9000:
+        screen.blit(background2, (0, 0))
+    else:
+        screen.blit(background3, (0, 0))
     player.draw()
     for enemy in enemy_group :
         enemy.draw()
@@ -284,6 +339,7 @@ while run:
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
+
 
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:  
