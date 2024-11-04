@@ -111,24 +111,37 @@ class Enemy(pygame.sprite.Sprite):
         #false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
 
+    # The enemy walks around
+    def ai(self):
+        if self.alive and player.alive:
+            if self.direction == 1 :
+                ai_movetothe_right = True
+            else :
+                ai_movetothe_right = False
+            ai_movetothe_left = not ai_movetothe_right
+            self.move(ai_movetothe_left,ai_movetothe_right)
+            self.update_action(1)
+            self.move_counter += 1
+            if self.move_counter > 40 :
+                self.direction *= -1
+                self.move_counter *= -1
+
 enemy_1 = Enemy(640, 275, 5, 2)
 enemy_2 = Enemy(535, 275, 5, 2)
 enemy_group.add(enemy_1)
 enemy_group.add(enemy_2)
-# The enemy walks around
-def ai(self):
-    if self.alive and player.alive:
-        if self.direction == 1 :
-            ai_movetothe_right = True
-        else :
-            ai_movetothe_right = False
-        ai_movetothe_left = not ai_movetothe_right
-        self.move(ai_movetothe_left,ai_movetothe_right)
-        self.update_action(1)
-        self.move_counter += 1
-        if self.move_counter > 40 :
-            self.direction *= -1
-            self.move_counter *= -1
+
+class ItemBox(pygame.sprite.Sprite):
+    def __init__(self,item_type,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.item_type = item_type
+        self.image = item_boxes[self.item_type]
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + 40//2,y + (40-self.image.get_height()))
+
+
+
+
 
 
 def load_and_scale_image(path, scale):
@@ -266,6 +279,7 @@ while run:
     for enemy in enemy_group :
         enemy.draw()
         '''enemy.ai()'''
+
     player.update_jump(dirt_blocks)
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
