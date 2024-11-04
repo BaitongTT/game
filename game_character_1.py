@@ -28,13 +28,16 @@ class character(pygame.sprite.Sprite):
         # properties for jumping
         self.jumping = False
         self.vertical_velocity = 0
-        self.gravity = 0.5
-        self.jump_force = -12
-        self.ground_y = 288  
+        self.gravity = 0.8
+        self.jump_force = -15
+        self.ground_y = 305  
         self.old_x = self.char_1_rect.x
         self.old_y = self.char_1_rect.y
+        self.on_ground = False
     
     def move(self, movetothe_left, movetothe_right,dirt_blocks):
+        self.old_x = self.char_1_rect.x
+        self.old_y = self.char_1_rect.y
         change_x = 0
         if (movetothe_left):
             change_x = -self.speed
@@ -59,6 +62,7 @@ class character(pygame.sprite.Sprite):
             self.char_1_rect.right = 720
 
     def update_jump(self,dirt_blocks):
+        self.on_ground = False
         # update jumping
         if self.jumping or self.char_1_rect.centery < self.ground_y:
             self.char_1_rect.centery += self.vertical_velocity
@@ -68,6 +72,7 @@ class character(pygame.sprite.Sprite):
                 if self.char_1_rect.colliderect(block.rect):
                     if self.vertical_velocity > 0:
                         self.char_1_rect.bottom = block.rect.top
+                        self.on_ground = True
                         self.jumping = False
                         self.vertical_velocity = 0
                     elif self.vertical_velocity < 0:
@@ -76,12 +81,14 @@ class character(pygame.sprite.Sprite):
                         break
                 if self.char_1_rect.centery >= self.ground_y:
                     self.char_1_rect.centery = self.ground_y
+                    self.on_ground = True
                     self.jumping = False
                     self.vertical_velocity = 0
     def jump(self):
         if not self.jumping:
             self.jumping = True
             self.vertical_velocity = self.jump_force
+            self.on_ground = True
 
     def draw(self):
         # false part is used for fliping to not be upside down
@@ -92,7 +99,7 @@ all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 
-player = character(55, 288, 5, 2)
+player = character(55, 305, 5, 2)
 
 # Enemy
 class Enemy(pygame.sprite.Sprite):
