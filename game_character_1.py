@@ -3,7 +3,7 @@ pygame.init()
 
 #framerate
 clock = pygame.time.Clock()
-FPS = 80
+FPS = 70
 
 #set display
 pygame.display.set_caption('Trick or Treat' )
@@ -97,6 +97,7 @@ class character(pygame.sprite.Sprite):
 all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
+bullet_group = pygame.sprite.Group()
 
 player = character(55, 305, 5, 2)
 
@@ -175,6 +176,24 @@ class LavaBlock(pygame.sprite.Sprite):
         super().__init__()
         self.image = load_and_scale_image("Image/lava.png", 1)  
         self.rect = self.image.get_rect(topleft=(x, y))
+    
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("Image/candy.png")
+        self.image = pygame.transform.scale(self.image, (25, 25))
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.speed = 7  
+        self.direction = direction  
+
+    def update(self):
+        # Move the bullet left or right depending on direction
+        self.rect.x += self.speed * self.direction
+
+        # Remove the bullet if it goes off the screen
+        if self.rect.right < 0 or self.rect.left > 720:
+            self.kill()
 
 #ITEMS
 class Item_1(pygame.sprite.Sprite):
@@ -333,11 +352,14 @@ while run:
         enemy.draw()
         '''enemy.ai()'''
 
+    #BULLETS
+    bullet_group.update()
+    bullet_group.draw(screen)
+
     player.update_jump(dirt_blocks)
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
-
 
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:  
@@ -352,6 +374,12 @@ while run:
                 run = False
             if event.key == pygame.K_UP: 
                 player.jump()
+            if event.key == pygame.K_SPACE:
+                # Spawn bullet based on character's position and direction
+                #.right (spawn at the right of the player)
+                #.centery (spawn at the mid of the player)
+                bullet = Bullet(player.char_1_rect.right, player.char_1_rect.centery, player.direction)
+                bullet_group.add(bullet)
 
         #(released)
         if event.type == pygame.KEYUP:
