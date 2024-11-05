@@ -145,7 +145,6 @@ def load_and_scale_image(path, scale):
 background2 = load_and_scale_image("Image/background_2.png", 1).convert()
 #background3 = load_and_scale_image("Image/background_1.png", 1).convert()
 
-
 #BLOCKS
 class DirtBlock(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -235,7 +234,6 @@ def create_item_4(start_x, y_pos, count):
         x_position = start_x + (step * 40)
         item = Item_4(x_position, y_pos, 9)
         dirt_blocks.add(item)
-
 
 #y = 361(first(floor)), 300(second), 240(third), 180(forth)
 #the last number is number of blocks
