@@ -28,8 +28,8 @@ class character(pygame.sprite.Sprite):
         # properties for jumping
         self.jumping = False
         self.vertical_velocity = 0
-        self.gravity = 0.8
-        self.jump_force = -15
+        self.gravity = 0.5
+        self.jump_force = -12
         self.ground_y = 305  
         self.old_x = self.char_1_rect.x
         self.old_y = self.char_1_rect.y
@@ -63,12 +63,11 @@ class character(pygame.sprite.Sprite):
 
     def update_jump(self,dirt_blocks):
         self.on_ground = False
+        self.vertical_velocity += self.gravity
+        self.char_1_rect.y += self.vertical_velocity
         # update jumping
-        if self.jumping or self.char_1_rect.centery < self.ground_y:
-            self.char_1_rect.centery += self.vertical_velocity
-            self.vertical_velocity += self.gravity
                 
-            for block in dirt_blocks: # Check for vertical collisions with blocks
+        for block in dirt_blocks: # Check for vertical collisions with blocks
                 if self.char_1_rect.colliderect(block.rect):
                     if self.vertical_velocity > 0:
                         self.char_1_rect.bottom = block.rect.top
@@ -78,14 +77,14 @@ class character(pygame.sprite.Sprite):
                     elif self.vertical_velocity < 0:
                         self.char_1_rect.top = block.rect.bottom
                         self.vertical_velocity = 0
-                        break
-                if self.char_1_rect.centery >= self.ground_y:
+                        
+        if self.char_1_rect.centery >= self.ground_y:
                     self.char_1_rect.centery = self.ground_y
                     self.on_ground = True
                     self.jumping = False
                     self.vertical_velocity = 0
     def jump(self):
-        if not self.jumping:
+        if self.on_ground and not self.jumping:
             self.jumping = True
             self.vertical_velocity = self.jump_force
             self.on_ground = True
@@ -118,24 +117,37 @@ class Enemy(pygame.sprite.Sprite):
         #false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
 
+    # The enemy walks around
+    def ai(self):
+        if self.alive and player.alive:
+            if self.direction == 1 :
+                ai_movetothe_right = True
+            else :
+                ai_movetothe_right = False
+            ai_movetothe_left = not ai_movetothe_right
+            self.move(ai_movetothe_left,ai_movetothe_right)
+            self.update_action(1)
+            self.move_counter += 1
+            if self.move_counter > 40 :
+                self.direction *= -1
+                self.move_counter *= -1
+
 enemy_1 = Enemy(640, 275, 5, 2)
 enemy_2 = Enemy(535, 275, 5, 2)
 enemy_group.add(enemy_1)
 enemy_group.add(enemy_2)
-# The enemy walks around
-def ai(self):
-    if self.alive and player.alive:
-        if self.direction == 1 :
-            ai_movetothe_right = True
-        else :
-            ai_movetothe_right = False
-        ai_movetothe_left = not ai_movetothe_right
-        self.move(ai_movetothe_left,ai_movetothe_right)
-        self.update_action(1)
-        self.move_counter += 1
-        if self.move_counter > 40 :
-            self.direction *= -1
-            self.move_counter *= -1
+
+class ItemBox(pygame.sprite.Sprite):
+    def __init__(self,item_type,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.item_type = item_type
+        self.image = item_boxes[self.item_type]
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + 40//2,y + (40-self.image.get_height()))
+
+
+
+
 
 
 def load_and_scale_image(path, scale):
@@ -143,7 +155,7 @@ def load_and_scale_image(path, scale):
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
 background2 = load_and_scale_image("Image/background_2.png", 1).convert()
-#background3 = load_and_scale_image("Image/background_1.png", 1).convert()
+background3 = load_and_scale_image("Image/background_3.png", 1).convert()
 
 #BLOCKS
 class DirtBlock(pygame.sprite.Sprite):
@@ -298,7 +310,8 @@ create_blocks_2(17720, 300, 9)
 create_blocks_2(18080, 361, 30)
 
 #moving objects
-speed = 10
+speed = 4
+scroll_x = 0 
 def move_objects_for_right(speed, move):
     if move:
         for block in dirt_blocks:
@@ -308,16 +321,23 @@ run = True
 while run:
     clock.tick(FPS)
     screen.fill((0,0,0))
-    screen.blit(background2, (0,0))
-    #screen.blit(background3, (9000,0))
+    if movetothe_right:
+        move_objects_for_right(speed, movetothe_right)
+        scroll_x += speed
+    if player.char_1_rect.x < 9000:
+        screen.blit(background2, (0, 0))
+    else:
+        screen.blit(background3, (0, 0))
     player.draw()
     for enemy in enemy_group :
         enemy.draw()
         '''enemy.ai()'''
+
     player.update_jump(dirt_blocks)
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
+
 
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:  
