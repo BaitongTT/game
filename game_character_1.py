@@ -181,7 +181,7 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("Image/candy.png")
-        self.image = pygame.transform.scale(self.image, (25, 25))
+        self.image = pygame.transform.scale(self.image, (25, 25)) #size of the bullets
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.speed = 7  
