@@ -1,3 +1,4 @@
+from typing import Any
 import pygame
 pygame.init()
 
@@ -92,12 +93,14 @@ class character(pygame.sprite.Sprite):
     def draw(self):
         # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
+    
 
 # sprite groups
 all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
+item_boxs_group = pygame.sprite.Group()
 
 player = character(55, 305, 5, 2)
 
@@ -113,10 +116,62 @@ class Enemy(pygame.sprite.Sprite):
         self.enemy_1 = pygame.image.load("Image/ghost_2.png").convert_alpha()
         self.enemy_1_rect = self.enemy_1.get_rect()
         self.enemy_1_rect.center = (x, y)
+        self.old_x = self.enemy_1_rect.x
+        self.old_y = self.enemy_1_rect.y
+        self.on_ground = False
+
+    def move(self, movetothe_left, movetothe_right,dirt_blocks):
+        self.old_x = self.enemy_1_rect.x
+        self.old_y = self.enemy_1_rect.y
+        change_x = 0
+        if (movetothe_left):
+            change_x = -self.speed
+            self.flip = True
+            self.direction = -1
+        if (movetothe_right):
+            change_x = self.speed
+            self.flip = False
+            self.direction = 1
+
+        #update position
+        self.enemy_1_rect.x += change_x
+        
+        for block in dirt_blocks: # Check for collisions with blocks
+            if self.enemy_1_rect.colliderect(block.rect):
+                self.enemy_1_rect.x = self.old_x
+                break
+
+        if self.enemy_1_rect.left < 0:  #dont go out of the left side
+            self.enemy_1_rect.left = 0
+        if self.enemy_1_rect.right > 720:  #dont go out of the right side
+            self.enemy_1_rect.right = 720
         
     def draw(self):
         #false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
+
+    def update_action(self,dirt_blocks):
+        self.on_ground = False
+        self.vertical_velocity += self.gravity
+        self.enemy_1_rect.y += self.vertical_velocity
+        # update action
+                
+        for block in dirt_blocks: # Check for vertical collisions with blocks
+                if self.enemy_1_rect.colliderect(block.rect):
+                    if self.vertical_velocity > 0:
+                        self.enemy_1_rect.bottom = block.rect.top
+                        self.on_ground = True
+                        self.jumping = False
+                        self.vertical_velocity = 0
+                    elif self.vertical_velocity < 0:
+                        self.enemy_1_rect.top = block.rect.bottom
+                        self.vertical_velocity = 0
+                        
+        if self.enemy_1_rect.centery >= self.ground_y:
+                    self.enemy_1_rect.centery = self.ground_y
+                    self.on_ground = True
+                    self.jumping = False
+                    self.vertical_velocity = 0
 
     # The enemy walks around
     def ai(self):
@@ -137,20 +192,53 @@ enemy_1 = Enemy(640, 275, 5, 2)
 enemy_2 = Enemy(535, 275, 5, 2)
 enemy_group.add(enemy_1)
 enemy_group.add(enemy_2)
-
+'''
 class ItemBox(pygame.sprite.Sprite):
     def __init__(self,item_type,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.item_type = item_type
-        self.image = item_boxes[self.item_type]
+        self.image = item_boxs[self.item_type]
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + 40//2,y + (40-self.image.get_height()))
+    def update(self):
+        #check if the player has picked up the box
+        if pygame.sprite.collide_rect(self,player):
+            #check what kind of box it was
+            if self.item_type == 'Paint_bucket' :
+                player.Paint_bucket += 25
+            elif self.item_type == 'Ice' :
+                player.Ice += 15
+            elif self.item_type == 'Health' :
+                player.Health += 3
+            elif self.item_type == 'Reduce_blood' :
+                player.Reduce_blood += 3
+            self.kill()
+# pick up boxes
+paint_bucket_box_img = pygame.image.load("Image/item_1.png").convert_alpha()
+ice_box_img = pygame.image.load("Image/item_2.png").convert_alpha()
+health_box_img = pygame.image.load("Image/item_3.png").convert_alpha()
+reduce_blood_box_img = pygame.image.load("Image/item_4.png").convert_alpha()
+item_boxs = { 
+    'Paint_bucket': paint_bucket_box_img,
+    'Ice': ice_box_img,
+    'Health': health_box_img,
+    'Reduce_blood' : reduce_blood_box_img
+}
 
-
-
-
-
-
+# temp - create item boxes
+item_boxs = ItemBox('Paint_bucket',4960, 298,1)
+item_boxs_group.add(item_boxs)
+item_boxs = ItemBox('Paint_bucket',13080, 298,1)
+item_boxs_group.add(item_boxs)
+item_boxs = ItemBox('Ice',7300, 177,1)
+item_boxs_group.add(item_boxs)
+item_boxs = ItemBox('Health',9120, 298,1)
+item_boxs_group.add(item_boxs)
+item_boxs = ItemBox('Reduce_blood',1140, 298,1)
+item_boxs_group.add(item_boxs)
+item_boxs = ItemBox('Reduce_blood',15440, 298,1)
+item_boxs_group.add(item_boxs)
+'''
 def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
@@ -351,6 +439,8 @@ while run:
     for enemy in enemy_group :
         enemy.draw()
         '''enemy.ai()'''
+    item_boxs_group.update()
+    item_boxs_group.draw(screen)
 
     #BULLETS
     bullet_group.update()
