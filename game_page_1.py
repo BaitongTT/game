@@ -73,7 +73,7 @@ while run:
         back_value = False
 
     if play_value:
-        print(111)
+        import  game_character_1
         break
   
     for event in pygame.event.get():

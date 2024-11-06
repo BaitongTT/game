@@ -16,6 +16,7 @@ width, length = screen.get_size() #get the windows size
 movetothe_left = False
 movetothe_right = False
 
+
 class character(pygame.sprite.Sprite):
     def __init__(self,x, y, scale, speed):
         pygame.sprite.Sprite.__init__(self)
@@ -427,6 +428,7 @@ def move_objects_for_right(speed, move):
 run = True
 while run:
     clock.tick(FPS)
+    import game_page_1
     screen.fill((0,0,0))
     if movetothe_right:
         move_objects_for_right(speed, movetothe_right)
