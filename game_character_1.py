@@ -95,6 +95,7 @@ class character(pygame.sprite.Sprite):
         # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
     
+player = character(55, 305, 5, 2)
 
 # sprite groups
 all_sprites = pygame.sprite.Group()
@@ -103,96 +104,34 @@ enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 item_boxs_group = pygame.sprite.Group()
 
-player = character(55, 305, 5, 2)
-
 # Enemy
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self,x, y, scale, speed):
-        self.speed = speed
-        self.direction = 1
-        self.flip = False
-        self.move_counter = 0
-        self.alive = True
-        pygame.sprite.Sprite.__init__(self)
-        self.enemy_1 = pygame.image.load("Image/ghost_2.png").convert_alpha()
-        self.enemy_1_rect = self.enemy_1.get_rect()
-        self.enemy_1_rect.center = (x, y)
-        self.old_x = self.enemy_1_rect.x
-        self.old_y = self.enemy_1_rect.y
-        self.on_ground = False
+enemy_image = pygame.image.load('Image/ghost_2.png')  
+enemy_rect = enemy_image.get_rect()
 
-    def move(self, movetothe_left, movetothe_right,dirt_blocks):
-        self.old_x = self.enemy_1_rect.x
-        self.old_y = self.enemy_1_rect.y
-        change_x = 0
-        if (movetothe_left):
-            change_x = -self.speed
-            self.flip = True
-            self.direction = -1
-        if (movetothe_right):
-            change_x = self.speed
-            self.flip = False
-            self.direction = 1
+class Enemy:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.image = enemy_image
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        self.speed = 2  # Movement speed
+        self.direction = 1  # Direction (1 is right, -1 is left)
 
-        #update position
-        self.enemy_1_rect.x += change_x
-        
-        for block in dirt_blocks: # Check for collisions with blocks
-            if self.enemy_1_rect.colliderect(block.rect):
-                self.enemy_1_rect.x = self.old_x
-                break
+    def move(self):
+        # Move in the specified direction
+        self.x += self.speed * self.direction
+        self.rect.topleft = (self.x, self.y)
 
-        if self.enemy_1_rect.left < 0:  #dont go out of the left side
-            self.enemy_1_rect.left = 0
-        if self.enemy_1_rect.right > 720:  #dont go out of the right side
-            self.enemy_1_rect.right = 720
-        
-    def draw(self):
-        #false part is used for fliping to not be upside down
-        screen.blit(pygame.transform.flip(self.enemy_1,self.flip, False), self.enemy_1_rect)
+        if self.rect.left <= 0:  
+            self.direction = 1  
+            self.rect.left = 0  
+        elif self.rect.right >= 720:  
+            self.direction = -1  
+            self.rect.right = 720
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+enemy = Enemy(100, 215) 
 
-    def update_action(self,dirt_blocks):
-        self.on_ground = False
-        self.vertical_velocity += self.gravity
-        self.enemy_1_rect.y += self.vertical_velocity
-        # update action
-                
-        for block in dirt_blocks: # Check for vertical collisions with blocks
-                if self.enemy_1_rect.colliderect(block.rect):
-                    if self.vertical_velocity > 0:
-                        self.enemy_1_rect.bottom = block.rect.top
-                        self.on_ground = True
-                        self.jumping = False
-                        self.vertical_velocity = 0
-                    elif self.vertical_velocity < 0:
-                        self.enemy_1_rect.top = block.rect.bottom
-                        self.vertical_velocity = 0
-                        
-        if self.enemy_1_rect.centery >= self.ground_y:
-                    self.enemy_1_rect.centery = self.ground_y
-                    self.on_ground = True
-                    self.jumping = False
-                    self.vertical_velocity = 0
-
-    # The enemy walks around
-    def ai(self):
-        if self.alive and player.alive:
-            if self.direction == 1 :
-                ai_movetothe_right = True
-            else :
-                ai_movetothe_right = False
-            ai_movetothe_left = not ai_movetothe_right
-            self.move(ai_movetothe_left,ai_movetothe_right)
-            self.update_action(1)
-            self.move_counter += 1
-            if self.move_counter > 40 :
-                self.direction *= -1
-                self.move_counter *= -1
-
-enemy_1 = Enemy(640, 275, 5, 2)
-enemy_2 = Enemy(535, 275, 5, 2)
-enemy_group.add(enemy_1)
-enemy_group.add(enemy_2)
 '''
 class ItemBox(pygame.sprite.Sprite):
     def __init__(self,item_type,x,y):
@@ -438,9 +377,8 @@ while run:
     else:
         screen.blit(background3, (0, 0))
     player.draw()
-    for enemy in enemy_group :
-        enemy.draw()
-        '''enemy.ai()'''
+    enemy.move()
+    enemy.draw(screen)
     item_boxs_group.update()
     item_boxs_group.draw(screen)
 
