@@ -195,12 +195,6 @@ class DirtBlock(pygame.sprite.Sprite):
         self.image = load_and_scale_image("Image/block.png", 1)
         self.rect = self.image.get_rect(topleft=(x, y))
 
-class DirtBlock_2(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
-        super().__init__()
-        self.image = load_and_scale_image("Image/block_2.png", 1)
-        self.rect = self.image.get_rect(topleft=(x, y))
-
 class LavaBlock(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
         super().__init__()
@@ -252,7 +246,7 @@ class Item_4(pygame.sprite.Sprite):
 
 #the floor section
 dirt_blocks = pygame.sprite.Group()
-for i in range(0, 18500, 71):  # start, how long, space (dirt = 40, lava = 71)
+for i in range(0, 9000, 71):  # start, how long, space (dirt = 40, lava = 71)
     #block = DirtBlock(i, 361, 9)
     block = LavaBlock(i, 361, 9)
     dirt_blocks.add(block)
@@ -264,13 +258,6 @@ def create_blocks_1(start_x, y_pos, count):
         block = DirtBlock(x_position, y_pos, 9)
         dirt_blocks.add(block)
 
-#blocks for the second session
-def create_blocks_2(start_x, y_pos, count): 
-    for step in range(count):
-        x_position = start_x + (step * 40)
-        block = DirtBlock_2(x_position, y_pos, 9)
-        dirt_blocks.add(block)
-        
 #items
 def create_item_1(start_x, y_pos, count): 
     for step in range(count):
@@ -327,36 +314,6 @@ create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
 create_blocks_1(8520, 361, 12)
 #end of first session
-
-create_blocks_2(9000, 361, 5)
-create_item_3(9120, 298, 1) #item_3
-create_blocks_2(9200, 300, 6)
-create_blocks_2(9440, 240, 4)
-create_blocks_2(9600, 300, 8)
-create_blocks_2(10000, 240, 8)
-create_blocks_2(10320, 180, 6)
-create_blocks_2(10560, 240, 10)
-create_blocks_2(10960, 180, 14)
-create_blocks_2(11560, 361, 5)
-create_blocks_2(11760, 300, 5)
-create_blocks_2(11960, 240, 15)
-create_blocks_2(12560, 300, 5)
-create_blocks_2(12760, 361, 10)
-create_item_1(13080, 298, 1) #item_1
-create_blocks_2(13200, 300, 8)
-create_blocks_2(13520, 240, 8)
-create_blocks_2(13840, 180, 15)
-create_blocks_2(14440, 240, 5)
-create_blocks_2(14640, 300, 10)
-create_blocks_2(15040, 361, 15)
-create_item_4(15440, 298, 1) #item_4
-create_blocks_2(15680, 300, 8)
-create_blocks_2(16000, 240, 8)
-create_blocks_2(16320, 180, 20)
-create_blocks_2(17120, 240, 6)
-create_blocks_2(17480, 240, 6)
-create_blocks_2(17720, 300, 9)
-create_blocks_2(18080, 361, 30)
 
 #moving objects
 speed = 4

@@ -80,7 +80,9 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-            break
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE: #closing game window with ESC
+                    run = False
 
     pygame.display.update()
 pygame.quit()
