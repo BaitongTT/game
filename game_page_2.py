@@ -1,5 +1,5 @@
-from typing import Any
 import pygame
+from game_page_1 import selected_character_index
 pygame.init()
 
 #framerate
@@ -18,12 +18,12 @@ movetothe_right = False
 
 
 class character(pygame.sprite.Sprite):
-    def __init__(self,x, y, scale, speed):
+    def __init__(self,x, y,image_path , speed):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
         self.direction = 1
         self.flip = False
-        self.char_1 = pygame.image.load("Image/character_1.png").convert_alpha()
+        self.char_1 = pygame.image.load(image_path).convert_alpha()
         self.char_1_rect = self.char_1.get_rect()
         self.char_1_rect.center = (x, y)
         
@@ -33,8 +33,6 @@ class character(pygame.sprite.Sprite):
         self.gravity = 0.5
         self.jump_force = -12
         self.ground_y = 305  
-        self.old_x = self.char_1_rect.x
-        self.old_y = self.char_1_rect.y
         self.on_ground = False
     
     def move(self, movetothe_left, movetothe_right,dirt_blocks):
@@ -95,7 +93,8 @@ class character(pygame.sprite.Sprite):
         # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
     
-player = character(55, 305, 5, 2)
+character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
+player = character(55, 305, character_images[selected_character_index], 2)
 
 # sprite groups
 all_sprites = pygame.sprite.Group()
@@ -367,7 +366,6 @@ def move_objects_for_right(speed, move):
 run = True
 while run:
     clock.tick(FPS)
-    import game_page_1
     screen.fill((0,0,0))
     if movetothe_right:
         move_objects_for_right(speed, movetothe_right)

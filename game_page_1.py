@@ -34,6 +34,7 @@ button_value = False
 character_values = [False, False, False]
 back_value = False
 play_value = False
+selected_character_index = 0
 
 #game loop
 run = True
@@ -52,6 +53,7 @@ while run:
             character.draw(screen)
             if character.is_pressed():
                 character_values[index] = True
+                selected_character_index = index
                 break
                 
         for index, character_value in enumerate(character_values):
@@ -73,7 +75,6 @@ while run:
         back_value = False
 
     if play_value:
-        import  game_character_1
         break
   
     for event in pygame.event.get():
