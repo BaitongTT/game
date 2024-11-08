@@ -1,5 +1,5 @@
 import pygame
-from game_page_1 import selected_character_index
+from game_page_2 import selected_character_index
 pygame.init()
 
 #framerate
@@ -33,7 +33,6 @@ class character(pygame.sprite.Sprite):
         self.gravity = 0.5
         self.jump_force = -12
         self.ground_y = 305
-        self.on_ground = False
         self.blocked = False
     
     def move(self, movetothe_left, movetothe_right,dirt_blocks):
@@ -186,14 +185,9 @@ def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
-background2 = load_and_scale_image("Image/background_2.png", 1).convert()
+background3 = load_and_scale_image("Image/background_3.png", 1).convert()
 
 #BLOCKS
-class DirtBlock(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
-        super().__init__()
-        self.image = load_and_scale_image("Image/block.png", 1)
-        self.rect = self.image.get_rect(topleft=(x, y))
 
 class DirtBlock_2(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -252,17 +246,10 @@ class Item_4(pygame.sprite.Sprite):
 
 #the floor section
 dirt_blocks = pygame.sprite.Group()
-for i in range(0, 18500, 71):  # start, how long, space (dirt = 40, lava = 71)
+for i in range(0, 9250, 71):  # start, how long, space (dirt = 40, lava = 71)
     #block = DirtBlock(i, 361, 9)
     block = LavaBlock(i, 361, 9)
     dirt_blocks.add(block)
-
-#blocks for the frist session
-def create_blocks_1(start_x, y_pos, count): 
-    for step in range(count):
-        x_position = start_x + (step * 40)
-        block = DirtBlock(x_position, y_pos, 9)
-        dirt_blocks.add(block)
 
 #blocks for the second session
 def create_blocks_2(start_x, y_pos, count): 
@@ -301,62 +288,36 @@ def create_item_4(start_x, y_pos, count):
 #the first 9000 blocks is the first session
 #the second 9000 blocks is the second session
 #the last 500 blocks is the end
-create_blocks_1(0, 361, 6)
-create_blocks_1(300, 300, 6)
-create_blocks_1(540, 240, 5)
-create_blocks_1(780, 361, 12)
-create_item_4(1140, 298, 1) #item_4
-create_blocks_1(1300, 300, 10)
-create_blocks_1(1840, 240, 14)
-create_blocks_1(2500, 300, 10)
-create_blocks_1(2900, 240, 8)
-create_blocks_1(3220, 180, 15)
-create_blocks_1(4000, 300, 10)
-create_blocks_1(4400, 240, 9)
-create_blocks_1(4800, 361, 6)
-create_item_1(4960, 298, 1) #item_1
-create_blocks_1(5040, 300, 5)
-create_blocks_1(5240, 240, 15)
-create_blocks_1(6000, 300, 8)
-create_blocks_1(6320, 240, 3)
-create_blocks_1(6440, 180, 15)
-create_blocks_1(7040, 240, 8)
-create_item_2(7300, 177, 1) #item_2
-create_blocks_1(7360, 180, 8)
-create_blocks_1(7680, 240, 6)
-create_blocks_1(7920, 300, 15)
-create_blocks_1(8520, 361, 12)
-#end of first session
 
-create_blocks_2(9000, 361, 5)
-create_item_3(9120, 298, 1) #item_3
-create_blocks_2(9200, 300, 6)
-create_blocks_2(9440, 240, 4)
-create_blocks_2(9600, 300, 8)
-create_blocks_2(10000, 240, 8)
-create_blocks_2(10320, 180, 6)
-create_blocks_2(10560, 240, 10)
-create_blocks_2(10960, 180, 14)
-create_blocks_2(11560, 361, 5)
-create_blocks_2(11760, 300, 5)
-create_blocks_2(11960, 240, 15)
-create_blocks_2(12560, 300, 5)
-create_blocks_2(12760, 361, 10)
-create_item_1(13080, 298, 1) #item_1
-create_blocks_2(13200, 300, 8)
-create_blocks_2(13520, 240, 8)
-create_blocks_2(13840, 180, 15)
-create_blocks_2(14440, 240, 5)
-create_blocks_2(14640, 300, 10)
-create_blocks_2(15040, 361, 15)
-create_item_4(15440, 298, 1) #item_4
-create_blocks_2(15680, 300, 8)
-create_blocks_2(16000, 240, 8)
-create_blocks_2(16320, 180, 20)
-create_blocks_2(17120, 240, 6)
-create_blocks_2(17480, 240, 6)
-create_blocks_2(17720, 300, 9)
-create_blocks_2(18080, 361, 30)
+create_blocks_2(0, 361, 5)
+create_item_3(300, 298, 1) #item_3
+create_blocks_2(540, 300, 6)
+create_blocks_2(780, 240, 4)
+create_blocks_2(1140, 300, 8)
+create_blocks_2(1300, 240, 8)
+create_blocks_2(1840, 180, 6)
+create_blocks_2(2500, 240, 10)
+create_blocks_2(2900, 180, 14)
+create_blocks_2(3220, 361, 5)
+create_blocks_2(4000, 300, 5)
+create_blocks_2(4400, 240, 15)
+create_blocks_2(4800, 300, 5)
+create_blocks_2(4960, 361, 10)
+create_item_1(5040, 298, 1) #item_1
+create_blocks_2(5240, 300, 8)
+create_blocks_2(6000, 240, 8)
+create_blocks_2(6320, 180, 15)
+create_blocks_2(7040, 240, 5)
+create_blocks_2(7300, 300, 10)
+create_blocks_2(7360, 361, 15)
+create_item_4(7680, 298, 1) #item_4
+create_blocks_2(7920, 300, 8)
+create_blocks_2(8520, 240, 8)
+create_blocks_2(9000, 180, 20)
+create_blocks_2(9120, 240, 6)
+create_blocks_2(9200, 240, 6)
+create_blocks_2(9440, 300, 9)
+create_blocks_2(9600, 361, 30)
 
 #moving objects
 speed = 4
@@ -370,7 +331,7 @@ run = True
 while run:
     clock.tick(FPS)
     screen.fill((0,0,0))
-    screen.blit(background2, (0, 0))
+    screen.blit(background3, (0, 0))
     player.draw()
     enemy.move()
     enemy.draw(screen)
