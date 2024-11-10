@@ -33,7 +33,9 @@ class character(pygame.sprite.Sprite):
         self.gravity = 0.5
         self.jump_force = -12
         self.ground_y = 305
+        self.on_ground = False
         self.blocked = False
+        self.on_platform = False
     
     def move(self, movetothe_left, movetothe_right,dirt_blocks):
         self.old_x = self.char_1_rect.x
@@ -51,11 +53,15 @@ class character(pygame.sprite.Sprite):
 
         #update position
         self.char_1_rect.x += change_x
+        self.blocked = False
 
         
         for block in dirt_blocks: # Check for collisions with blocks
             if self.char_1_rect.colliderect(block.rect):
-                self.char_1_rect.x = self.old_x
+                if change_x > 0:  # Moving right
+                    self.char_1_rect.right = block.rect.left
+                elif change_x < 0:  # Moving left
+                    self.char_1_rect.left = block.rect.right
                 self.blocked = True
                 break
 
@@ -75,6 +81,7 @@ class character(pygame.sprite.Sprite):
                     if self.vertical_velocity > 0:
                         self.char_1_rect.bottom = block.rect.top
                         self.on_ground = True
+                        self.on_platform = True
                         self.jumping = False
                         self.vertical_velocity = 0
                     elif self.vertical_velocity < 0:
@@ -91,6 +98,7 @@ class character(pygame.sprite.Sprite):
             self.jumping = True
             self.vertical_velocity = self.jump_force
             self.on_ground = False
+            self.on_platform = False
 
     def draw(self):
         # false part is used for fliping to not be upside down
