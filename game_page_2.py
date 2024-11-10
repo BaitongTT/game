@@ -332,13 +332,13 @@ create_blocks_1(7040, 240, 8)
 create_blocks_1(7360, 180, 8)
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
-create_blocks_1(8520, 361, 12)
+create_blocks_1(8520, 361, 20)
 #end of first session
 
 #moving objects
 speed = 4
 scroll_x = 0 
-end_of_level_x = 9000 
+end_of_level_x = 9110   
 level_next = False
 def move_objects_for_right(speed, move):
     global scroll_x,level_next
