@@ -67,8 +67,9 @@ class character(pygame.sprite.Sprite):
 
         if self.char_1_rect.left < 0:  #dont go out of the left side
             self.char_1_rect.left = 0
-        if self.char_1_rect.right > 720:  #dont go out of the right side
-            self.char_1_rect.right = 720
+        if scroll_x < end_of_level_x - 720:
+            if self.char_1_rect.right > 720: #dont go out of the right side
+                 self.char_1_rect.right = 720
 
     def update_jump(self,dirt_blocks):
         self.on_ground = False
@@ -324,10 +325,19 @@ create_blocks_1(8520, 361, 12)
 #moving objects
 speed = 4
 scroll_x = 0 
+end_of_level_x = 9000 
+level_next = False
 def move_objects_for_right(speed, move):
-    if move:
+    global scroll_x,level_next
+    if scroll_x >= end_of_level_x - width:
+        if player.char_1_rect.left > width:
+            level_next = True
+            return True
+    if move and scroll_x < end_of_level_x - width:
+        scroll_x += speed 
         for block in dirt_blocks:
             block.rect.x -= speed
+        return False
 
 run = True
 while run:
@@ -348,6 +358,9 @@ while run:
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
+    
+    if level_next == True:
+        break
 
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:  
