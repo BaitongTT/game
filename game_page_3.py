@@ -1,10 +1,16 @@
 import pygame
-from game_page_2 import selected_character_index
+from game_page_2 import selected_character_index,character,HealthBar
 pygame.init()
 
 #framerate
 clock = pygame.time.Clock()
 FPS = 70
+
+#define colours
+RED = (255,0,0)
+GREEN = (0,255,0)
+BLACK =(0,0,0)
+WHITE = (255,255,255)
 
 #set display
 pygame.display.set_caption('Trick or Treat' )
@@ -18,7 +24,7 @@ movetothe_right = False
 
 
 class character(pygame.sprite.Sprite):
-    def __init__(self,x, y,image_path , speed):
+    def __init__(self,x, y,image_path , speed,ammo,enemy=None):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
         self.direction = 1
@@ -26,6 +32,13 @@ class character(pygame.sprite.Sprite):
         self.char_1 = pygame.image.load(image_path).convert_alpha()
         self.char_1_rect = self.char_1.get_rect()
         self.char_1_rect.center = (x, y)
+        self.health = 100
+        self.max_health = 100
+        self.reduce_blood = 0
+        self.ammo = ammo
+        self.start_ammo = ammo
+        self.enemy = enemy
+        self.start_enemy = enemy
         
         # properties for jumping
         self.jumping = False
@@ -103,9 +116,6 @@ class character(pygame.sprite.Sprite):
     def draw(self):
         # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
-    
-character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
-player = character(55, 305, character_images[selected_character_index], 2)
 
 # sprite groups
 all_sprites = pygame.sprite.Group()
@@ -142,53 +152,57 @@ class Enemy:
         screen.blit(self.image, self.rect)
 enemy = Enemy(100, 215) 
 
-'''
-class ItemBox(pygame.sprite.Sprite):
-    def __init__(self,item_type,x,y):
-        pygame.sprite.Sprite.__init__(self)
-        self.item_type = item_type
-        self.image = item_boxs[self.item_type]
-        self.rect = self.image.get_rect()
-        self.rect.midtop = (x + 40//2,y + (40-self.image.get_height()))
-    def update(self):
-        #check if the player has picked up the box
-        if pygame.sprite.collide_rect(self,player):
-            #check what kind of box it was
-            if self.item_type == 'Paint_bucket' :
-                player.Paint_bucket += 25
-            elif self.item_type == 'Ice' :
-                player.Ice += 15
-            elif self.item_type == 'Health' :
-                player.Health += 3
-            elif self.item_type == 'Reduce_blood' :
-                player.Reduce_blood += 3
-            self.kill()
-# pick up boxes
-paint_bucket_box_img = pygame.image.load("Image/item_1.png").convert_alpha()
-ice_box_img = pygame.image.load("Image/item_2.png").convert_alpha()
-health_box_img = pygame.image.load("Image/item_3.png").convert_alpha()
-reduce_blood_box_img = pygame.image.load("Image/item_4.png").convert_alpha()
-item_boxs = { 
-    'Paint_bucket': paint_bucket_box_img,
-    'Ice': ice_box_img,
-    'Health': health_box_img,
-    'Reduce_blood' : reduce_blood_box_img
-}
+#player
+reduce_blood_value = 100  
+character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
+player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
 
+# ITEMS
+class ItemBox(pygame.sprite.Sprite):
+    def __init__(self, item_type, x, y):
+        super().__init__()  
+        self.item_type = item_type
+        self.x = x
+        self.y = y
+        item_images = {
+            'Health': 'Image/item_3.png',
+            'Reduce_blood': 'Image/item_4.png'
+        }  
+        if self.item_type in item_images:
+            self.image = pygame.image.load(item_images[self.item_type])
+        self.image = pygame.transform.scale(self.image, (40, 40))  
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+        
 # temp - create item boxes
-item_boxs = ItemBox('Paint_bucket',4960, 298,1)
-item_boxs_group.add(item_boxs)
-item_boxs = ItemBox('Paint_bucket',13080, 298,1)
-item_boxs_group.add(item_boxs)
-item_boxs = ItemBox('Ice',7300, 177,1)
-item_boxs_group.add(item_boxs)
-item_boxs = ItemBox('Health',9120, 298,1)
-item_boxs_group.add(item_boxs)
-item_boxs = ItemBox('Reduce_blood',1140, 298,1)
-item_boxs_group.add(item_boxs)
-item_boxs = ItemBox('Reduce_blood',15440, 298,1)
-item_boxs_group.add(item_boxs)
-'''
+health_item  = ItemBox('Health',100, 322)
+reduce_blood_item = ItemBox('Reduce_blood',400, 322)
+item_boxs_group.add(health_item,reduce_blood_item)
+
+# HealthBar
+class HealthBar():
+    def __init__(self,x,y,health,max_health):
+        self.x = x
+        self.y = y
+        self.health = health
+        self.max_health = max_health
+    def draw(self,health):
+        self.health = health
+        ratio = self.health/self.max_health
+        pygame.draw.rect(screen,BLACK,(self.x-2,self.y-2,150,20))
+        pygame.draw.rect(screen,RED,(self.x,self.y,150,20))
+        pygame.draw.rect(screen,GREEN,(self.x,self.y,150*ratio,20))
+health_bar = HealthBar(10,10,player.health,player.health)        
+
+#define font
+font =pygame.font.SysFont('Futura',20)
+
+def draw_text(text,font,text_col,x,y):
+    img = font.render(text,True,text_col)
+    screen.blit(img,(x,y))
+
+
 def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
@@ -227,18 +241,7 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 #ITEMS
-class Item_1(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
-        super().__init__()
-        self.image = load_and_scale_image("Image/item_1.png", 1)  
-        self.rect = self.image.get_rect(topleft=(x, y))
-
-class Item_2(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
-        super().__init__()
-        self.image = load_and_scale_image("Image/item_2.png", 1)  
-        self.rect = self.image.get_rect(topleft=(x, y))
-
+'''''
 class Item_3(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
         super().__init__()
@@ -250,6 +253,7 @@ class Item_4(pygame.sprite.Sprite):
         super().__init__()
         self.image = load_and_scale_image("Image/item_4.png", 1)  
         self.rect = self.image.get_rect(topleft=(x, y))
+'''''
 
 #the floor section
 dirt_blocks = pygame.sprite.Group()
@@ -266,18 +270,7 @@ def create_blocks_2(start_x, y_pos, count):
         dirt_blocks.add(block)
         
 #items
-def create_item_1(start_x, y_pos, count): 
-    for step in range(count):
-        x_position = start_x + (step * 40)
-        item = Item_1(x_position, y_pos, 9)
-        dirt_blocks.add(item)
-
-def create_item_2(start_x, y_pos, count): 
-    for step in range(count):
-        x_position = start_x + (step * 40)
-        item = Item_2(x_position, y_pos, 9)
-        dirt_blocks.add(item)
-
+'''''
 def create_item_3(start_x, y_pos, count): 
     for step in range(count):
         x_position = start_x + (step * 40)
@@ -289,7 +282,7 @@ def create_item_4(start_x, y_pos, count):
         x_position = start_x + (step * 40)
         item = Item_4(x_position, y_pos, 9)
         dirt_blocks.add(item)
-
+'''
 #y = 361(first(floor)), 300(second), 240(third), 180(forth)
 #the last number is number of blocks
 #the first 9000 blocks is the first session
@@ -297,7 +290,7 @@ def create_item_4(start_x, y_pos, count):
 #the last 500 blocks is the end
 
 create_blocks_2(0, 361, 15   )
-create_item_3(300, 298, 1) #item_3  
+#create_item_3(300, 298, 1) #item_3  
 create_blocks_2(650 , 300, 5)
 create_blocks_2(900, 240, 6)
 create_blocks_2(1200, 180, 15)
@@ -311,7 +304,7 @@ create_blocks_2(3700, 300, 6)
 create_blocks_2(4000, 240, 5)
 create_blocks_2(4300, 300, 6)
 create_blocks_2(4600, 361, 13)
-create_item_4(4900, 298, 1) #item_4
+#create_item_4(4900, 298, 1) #item_4
 create_blocks_2(5240, 300, 7)
 create_blocks_2(5600, 240, 8)
 create_blocks_2(6000, 180, 5)
@@ -319,7 +312,7 @@ create_blocks_2(6320, 180, 12)
 create_blocks_2(6900, 240, 6)
 create_blocks_2(7300, 300, 10)
 create_blocks_2(7780, 361, 8)
-create_item_4(7880, 298, 1) #item_4
+#create_item_4(7880, 298, 1) #item_4
 create_blocks_2(8200, 300, 8)
 create_blocks_2(8620, 240, 8)
 create_blocks_2(9000, 180, 15)
@@ -352,6 +345,16 @@ while run:
     enemy.draw(screen)
     item_boxs_group.update()
     item_boxs_group.draw(screen)
+    #show player health
+    health_bar.draw(player.health)
+    #show ammo
+    draw_text(f"AMMO :",font,WHITE,10,35)
+    #show enemy
+    draw_text(f"ENEMY :",font,WHITE,10,50)
+    '''
+    for x in range(player.ammo):
+        screen.blit((90+(x*10),40))
+    '''
 
     #BULLETS
     bullet_group.update()
