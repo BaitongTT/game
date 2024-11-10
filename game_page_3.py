@@ -195,8 +195,7 @@ def load_and_scale_image(path, scale):
 
 background3 = load_and_scale_image("Image/background_3.png", 1).convert()
 
-#BLOCKS
-
+#BLOCKS  
 class DirtBlock_2(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
         super().__init__()
@@ -254,7 +253,7 @@ class Item_4(pygame.sprite.Sprite):
 
 #the floor section
 dirt_blocks = pygame.sprite.Group()
-for i in range(0, 9250, 71):  # start, how long, space (dirt = 40, lava = 71)
+for i in range(0, 11000, 71):  # start, how long, space (dirt = 40, lava = 71)
     #block = DirtBlock(i, 361, 9)
     block = LavaBlock(i, 361, 9)
     dirt_blocks.add(block)
@@ -297,43 +296,51 @@ def create_item_4(start_x, y_pos, count):
 #the second 9000 blocks is the second session
 #the last 500 blocks is the end
 
-create_blocks_2(0, 361, 5)
-create_item_3(300, 298, 1) #item_3
-create_blocks_2(540, 300, 6)
-create_blocks_2(780, 240, 4)
-create_blocks_2(1140, 300, 8)
-create_blocks_2(1300, 240, 8)
-create_blocks_2(1840, 180, 6)
-create_blocks_2(2500, 240, 10)
-create_blocks_2(2900, 180, 14)
-create_blocks_2(3220, 361, 5)
-create_blocks_2(4000, 300, 5)
-create_blocks_2(4400, 240, 15)
-create_blocks_2(4800, 300, 5)
-create_blocks_2(4960, 361, 10)
-create_item_1(5040, 298, 1) #item_1
-create_blocks_2(5240, 300, 8)
-create_blocks_2(6000, 240, 8)
-create_blocks_2(6320, 180, 15)
-create_blocks_2(7040, 240, 5)
+create_blocks_2(0, 361, 15   )
+create_item_3(300, 298, 1) #item_3  
+create_blocks_2(650 , 300, 5)
+create_blocks_2(900, 240, 6)
+create_blocks_2(1200, 180, 15)
+create_blocks_2(1850, 300, 4)
+create_blocks_2(2100, 361, 6)
+create_blocks_2(2400, 300, 5)
+create_blocks_2(2700, 240, 6)
+create_blocks_2(3000, 180, 6)
+create_blocks_2(3350, 180, 7)
+create_blocks_2(3700, 300, 6)
+create_blocks_2(4000, 240, 5)
+create_blocks_2(4300, 300, 6)
+create_blocks_2(4600, 361, 13)
+create_item_4(4900, 298, 1) #item_4
+create_blocks_2(5240, 300, 7)
+create_blocks_2(5600, 240, 8)
+create_blocks_2(6000, 180, 5)
+create_blocks_2(6320, 180, 12)
+create_blocks_2(6900, 240, 6)
 create_blocks_2(7300, 300, 10)
-create_blocks_2(7360, 361, 15)
-create_item_4(7680, 298, 1) #item_4
-create_blocks_2(7920, 300, 8)
-create_blocks_2(8520, 240, 8)
-create_blocks_2(9000, 180, 20)
-create_blocks_2(9120, 240, 6)
-create_blocks_2(9200, 240, 6)
-create_blocks_2(9440, 300, 9)
-create_blocks_2(9600, 361, 30)
-
+create_blocks_2(7780, 361, 8)
+create_item_4(7880, 298, 1) #item_4
+create_blocks_2(8200, 300, 8)
+create_blocks_2(8620, 240, 8)
+create_blocks_2(9000, 180, 15)
+create_blocks_2(9700, 361, 50)
+  
 #moving objects
 speed = 4
 scroll_x = 0 
+end_of_level_x = 11000 
+level_next = False
 def move_objects_for_right(speed, move):
-    if move:
+    global scroll_x,level_next
+    if scroll_x >= end_of_level_x - width:
+        if player.char_1_rect.left > width:
+            level_next = True
+            return True
+    if move and scroll_x < end_of_level_x - width:
+        scroll_x += speed 
         for block in dirt_blocks:
             block.rect.x -= speed
+        return False
 
 run = True
 while run:
@@ -354,6 +361,9 @@ while run:
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
+    
+    if level_next == True:
+        pass
 
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:  

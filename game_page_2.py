@@ -323,7 +323,7 @@ create_blocks_1(8520, 361, 20)
 #end of first session
 
 #moving objects
-speed = 10
+speed = 4
 scroll_x = 0 
 end_of_level_x = 9110   
 level_next = False
