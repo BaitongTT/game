@@ -124,10 +124,10 @@ enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 item_boxs_group = pygame.sprite.Group()
 
+'''''
 # Enemy
 enemy_image = pygame.image.load('Image/ghost_2.png')  
 enemy_rect = enemy_image.get_rect()
-
 class Enemy:
     def __init__(self, x, y):
         self.x = x
@@ -151,11 +151,60 @@ class Enemy:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 enemy = Enemy(100, 215) 
-
+'''''''''
 #player
 reduce_blood_value = 100  
 character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
-player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
+player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value)#,enemy)
+
+# Boss class
+class ghost_boss(pygame.sprite.Sprite):
+    def __init__(self, x, y,move_range=200):
+        super().__init__()
+        self.image = pygame.image.load("Image/ghost_1.png")
+        self.image = pygame.transform.scale(self.image, (120, 120))
+        self.rect = self.image.get_rect(center=(x, y))
+        self.health = 1000  
+        self.max_health = 1000
+        self.shoot_timer = 0
+        self.shoot_interval = 120
+        
+        # Walking properties
+        self.move_direction = 1  
+        self.move_speed = 2  
+        self.start_x = x  
+        self.move_range = move_range  
+
+    def update(self):
+       # Move the boss within the defined range
+        self.rect.x += self.move_speed * self.move_direction
+        if self.rect.x > self.start_x + self.move_range:
+            self.move_direction = -1  # Move left
+        elif self.rect.x < self.start_x - self.move_range:
+            self.move_direction = 1  # Move right
+            
+        # Automatic shooting mechanism
+        self.shoot_timer += 1
+        if self.shoot_timer >= self.shoot_interval:
+            self.shoot_timer = 0
+            self.shoot_bullet()
+        
+    def shoot_bullet(self):
+        # Boss shoots a bullet towards the player
+        direction = -1 if self.rect.centerx > player.char_1_rect.centerx else 1
+        boss_bullet = Bullet(self.rect.centerx, self.rect.centery, direction)
+        bullet_group.add(boss_bullet)
+
+    def draw(self):
+        screen.blit(self.image, self.rect)
+        ratio = self.health / self.max_health
+        pygame.draw.rect(screen, RED, (self.rect.x, self.rect.y - 10, 120, 10))
+        pygame.draw.rect(screen, GREEN, (self.rect.x, self.rect.y - 10, 120 * ratio, 10))
+
+# Initialize boss
+boss = ghost_boss(500, 250,move_range=200)  
+all_sprites.add(boss)
+
 
 # ITEMS
 class ItemBox(pygame.sprite.Sprite):
@@ -341,8 +390,8 @@ while run:
     screen.fill((0,0,0))
     screen.blit(background3, (0, 0))
     player.draw()
-    enemy.move()
-    enemy.draw(screen)
+    #enemy.move()
+    #enemy.draw(screen)
     item_boxs_group.update()
     item_boxs_group.draw(screen)
     #show player health
@@ -364,6 +413,20 @@ while run:
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
+    
+    # Check for collision between player bullets and boss
+    for bullet in bullet_group:
+        if boss.rect.colliderect(bullet.rect):
+            boss.health -= 10  # Decrease boss health when hit by a bullet
+            bullet.kill()  # Remove bullet upon collision
+            
+    # End game if boss health reaches 0
+    if boss.health <= 0:
+        level_next = True  # Trigger level end or boss defeated state
+
+    # Draw boss
+    boss.update()
+    boss.draw()
     
     if level_next == True:
         pass
