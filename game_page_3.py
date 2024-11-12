@@ -118,11 +118,11 @@ class character(pygame.sprite.Sprite):
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
 
 # sprite groups
-all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
-item_boxs_group = pygame.sprite.Group()
+item_box_group = pygame.sprite.Group()
+boss_group = pygame.sprite.Group()
 
 '''''
 # Enemy
@@ -159,12 +159,21 @@ player = character(55, 305, character_images[selected_character_index], 2,reduce
 
 # Boss class
 class ghost_boss(pygame.sprite.Sprite):
-    def __init__(self, x, y,move_range=200):
+    def __init__(self, x_position, y_position,move_range=200):
         super().__init__()
         self.original_image = pygame.image.load("Image/ghost_1.png")
         self.original_image = pygame.transform.scale(self.original_image, (150, 150))
         self.image = self.original_image
-        self.rect = self.image.get_rect(center=(x, 280))
+        self.rect = self.image.get_rect()
+       
+       # Set initial position
+        self.rect.x = x_position
+        self.rect.y = y_position
+        self.start_x = x_position
+        self.start_y = y_position
+        self.absolute_x = x_position
+       
+        self.move_range = move_range
         self.health = 1000  
         self.max_health = 1000
         self.shoot_timer = 0 
@@ -176,25 +185,25 @@ class ghost_boss(pygame.sprite.Sprite):
         
         # Walking properties
         self.move_speed = 2
-        self.start_x = x  
-        self.move_range = move_range
         self.facing_left = False
 
-    def update(self):
-       # Move within the defined range
-        if player.char_1_rect.centerx < self.rect.centerx:  
-            if self.rect.x > self.start_x - self.move_range: 
-                self.rect.x -= self.move_speed
-            if self.facing_left:
-                self.facing_left = True
-                self.image = pygame.transform.flip(self.original_image, True, False)
-                
-        elif player.char_1_rect.centerx > self.rect.centerx:  
-            if self.rect.x < self.start_x + self.move_range:
-                self.rect.x += self.move_speed
-            if not self.facing_left:
-                self.facing_left = False
-                self.image = self.original_image
+    def update(self, scroll_x):
+        self.rect.x = self.absolute_x - scroll_x
+        if -150 <= self.rect.x <= 720:
+        # Move within the defined range
+            if player.char_1_rect.centerx < self.rect.centerx:  
+                if self.rect.x > self.start_x - self.move_range: 
+                    self.rect.x -= self.move_speed
+                if self.facing_left:
+                    self.facing_left = True
+                    self.image = pygame.transform.flip(self.original_image, True, False)
+                    
+            elif player.char_1_rect.centerx > self.rect.centerx:  
+                if self.rect.x < self.start_x + self.move_range:
+                    self.rect.x += self.move_speed
+                if not self.facing_left:
+                    self.facing_left = False
+                    self.image = self.original_image
             
         # Automatic shooting mechanism
         self.shoot_timer += 1
@@ -227,11 +236,12 @@ class ghost_boss(pygame.sprite.Sprite):
                 bullet.kill()
     
     def draw(self,screen):
-        screen.blit(self.image, self.rect)
-        ratio = self.health / self.max_health
-        pygame.draw.rect(screen, RED, (self.rect.x, self.rect.y - 10, 120, 10))
-        pygame.draw.rect(screen, GREEN, (self.rect.x, self.rect.y - 10, 120 * ratio, 10))
-        self.bullets.draw(screen)
+        if -150 <= self.rect.x <= 720:
+            screen.blit(self.image, self.rect)
+            ratio = self.health / self.max_health
+            pygame.draw.rect(screen, RED, (self.rect.x, self.rect.y - 10, 120, 10))
+            pygame.draw.rect(screen, GREEN, (self.rect.x, self.rect.y - 10, 120 * ratio, 10))
+            self.bullets.draw(screen)
     
     def take_damage(self, amount):
         self.health -= amount
@@ -243,16 +253,24 @@ class BossBullet(pygame.sprite.Sprite):
         super().__init__()
         self.image = bullet_image
         self.rect = self.image.get_rect(center=(x, y))
+        self.absolute_x = x 
         self.speed = speed
         # Calculate direction based on target position
         self.direction = -1 if x > target_x else 1
 
     def update(self):
+        self.absolute_x += self.speed * self.direction
         self.rect.x += self.speed * self.direction
 
-boss = ghost_boss(500, 250,move_range=200)  
-all_sprites.add(boss)
+def create_ghost_boss(x_position, y_position, move_range=200):
+    #Create a ghost boss at the specified position
+    #x_position: x coordinate in world space
+    #y_position: y coordinate
+    #move_range: how far the boss can move left/right from its starting position
 
+    boss = ghost_boss(x_position, y_position, move_range)
+    boss_group.add(boss)
+    return boss
 
 # ITEMS
 class ItemBox(pygame.sprite.Sprite):
@@ -273,9 +291,11 @@ class ItemBox(pygame.sprite.Sprite):
         self.rect.y = self.y
         
 # temp - create item boxes
-health_item  = ItemBox('Health',100, 322)
-reduce_blood_item = ItemBox('Reduce_blood',400, 322)
-item_boxs_group.add(health_item,reduce_blood_item)
+health_item1  = ItemBox('Health',200, 320)
+health_item2  = ItemBox('Health',300, 320)
+reduce_blood_item1 = ItemBox('Reduce_blood',400, 320)
+reduce_blood_item2 = ItemBox('Reduce_blood',500, 320)
+item_box_group.add(health_item1,health_item2,reduce_blood_item1,reduce_blood_item2)
 
 # HealthBar
 class HealthBar():
@@ -414,11 +434,12 @@ create_blocks_2(8200, 300, 8)
 create_blocks_2(8620, 240, 8)
 create_blocks_2(9000, 180, 15)
 create_blocks_2(9700, 361, 50)
+create_ghost_boss(10000, 200)
   
 #moving objects
-speed = 4
+speed = 15
 scroll_x = 0 
-end_of_level_x = 11000 
+end_of_level_x = 10500 
 level_next = False
 def move_objects_for_right(speed, move):
     global scroll_x,level_next
@@ -440,14 +461,12 @@ while run:
     player.draw()
     #enemy.move()
     #enemy.draw(screen)
-    item_boxs_group.update()
-    item_boxs_group.draw(screen)
+    item_box_group.update()
+    item_box_group.draw(screen)
     #show player health
     health_bar.draw(player.health)
-    #show ammo
-    draw_text(f"AMMO :",font,WHITE,10,35)
     #show enemy
-    draw_text(f"ENEMY :",font,WHITE,10,50)
+    draw_text(f"ENEMY :",font,WHITE,10,35)
     '''
     for x in range(player.ammo):
         screen.blit((90+(x*10),40))
@@ -462,19 +481,23 @@ while run:
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
     
-    # Check for collision between player bullets and boss
-    for bullet in bullet_group:
-        if boss.rect.colliderect(bullet.rect):
-            boss.health -= 10  # Decrease boss health when hit by a bullet
-            bullet.kill()  # Remove bullet upon collision
+    for boss in boss_group:
+        boss.update(scroll_x)
+        boss.draw(screen)
+        if -150 <= boss.rect.x <= 720:
+            for bullet in bullet_group:
+                if boss.rect.colliderect(bullet.rect):
+                    boss.take_damage(10)
+                    bullet.kill()
             
-    # End game if boss health reaches 0
-    if boss.health <= 0:
-        level_next = True  # Trigger level end or boss defeated state
-
-    # Draw boss
-    boss.update()
-    boss.draw(screen)
+            # Check for collisions between boss bullets and players.
+            for bullet in boss.bullets:
+                if bullet.rect.colliderect(player.char_1_rect):
+                    player.health -= 10  
+                    bullet.kill()
+        # End game if boss health reaches 0
+        if boss.health <= 0:
+            boss.kill()
     
     if level_next == True:
         pass
@@ -489,6 +512,7 @@ while run:
             if event.key == pygame.K_RIGHT:
                 movetothe_right = True
             if event.key == pygame.K_ESCAPE: #closing game window with ESC
+
                 run = False
             if event.key == pygame.K_UP: 
                 player.jump()
