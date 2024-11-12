@@ -199,10 +199,10 @@ item_boxes = {
 }
 '''
 # temp - create item boxes
-health_item1  = ItemBox('Health',200, 300)
-health_item2  = ItemBox('Health',300, 300)
-reduce_blood_item1 = ItemBox('Reduce_blood',400, 300)
-reduce_blood_item2 = ItemBox('Reduce_blood',500, 300)
+health_item1  = ItemBox('Health',200, 320)
+health_item2  = ItemBox('Health',300, 320)
+reduce_blood_item1 = ItemBox('Reduce_blood',400, 320)
+reduce_blood_item2 = ItemBox('Reduce_blood',500, 320)
 item_box_group.add(health_item1,health_item2,reduce_blood_item1,reduce_blood_item2)
 
 # HealthBar
