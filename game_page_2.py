@@ -176,7 +176,8 @@ class ItemBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
-    '''
+    ''' 
+    def update(self):
     #check if the player has picked up the box
         if pygame.sprite.collide_rect(self,player):
             #check what kind of box it was
@@ -187,7 +188,7 @@ class ItemBox(pygame.sprite.Sprite):
             elif self.item_type == 'Reduce_blood' :
                 player.reduce_blood += 15
             self.kill()
-    '''
+   '''
 '''
 # pick up boxes
 health_box_img = pygame.image.load("Image/item_3.png").convert_alpha()
@@ -198,9 +199,11 @@ item_boxes = {
 }
 '''
 # temp - create item boxes
-health_item  = ItemBox('Health',100, 322)
-reduce_blood_item = ItemBox('Reduce_blood',400, 322)
-item_box_group.add(health_item,reduce_blood_item)
+health_item1  = ItemBox('Health',200, 300)
+health_item2  = ItemBox('Health',300, 300)
+reduce_blood_item1 = ItemBox('Reduce_blood',400, 300)
+reduce_blood_item2 = ItemBox('Reduce_blood',500, 300)
+item_box_group.add(health_item1,health_item2,reduce_blood_item1,reduce_blood_item2)
 
 # HealthBar
 class HealthBar():
@@ -364,10 +367,8 @@ while run:
     item_box_group.draw(screen)
     #show player health
     health_bar.draw(player.health)
-    #show ammo
-    draw_text(f"AMMO :",font,WHITE,10,35)
     #show enemy
-    draw_text(f"ENEMY :",font,WHITE,10,50)
+    draw_text(f"ENEMY :",font,WHITE,10,35)
     '''
     for x in range(player.ammo):
         screen.blit((90+(x*10),40))
