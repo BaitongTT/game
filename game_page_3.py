@@ -161,47 +161,95 @@ player = character(55, 305, character_images[selected_character_index], 2,reduce
 class ghost_boss(pygame.sprite.Sprite):
     def __init__(self, x, y,move_range=200):
         super().__init__()
-        self.image = pygame.image.load("Image/ghost_1.png")
-        self.image = pygame.transform.scale(self.image, (120, 120))
-        self.rect = self.image.get_rect(center=(x, y))
+        self.original_image = pygame.image.load("Image/ghost_1.png")
+        self.original_image = pygame.transform.scale(self.original_image, (150, 150))
+        self.image = self.original_image
+        self.rect = self.image.get_rect(center=(x, 280))
         self.health = 1000  
         self.max_health = 1000
-        self.shoot_timer = 0
+        self.shoot_timer = 0 
         self.shoot_interval = 120
+        self.bullets = pygame.sprite.Group()  # Create a group of bullets inside
+        self.bullet_speed = 7
+        self.bullet_image = pygame.image.load("Image/action_ghost_1.png").convert_alpha()
+        self.bullet_image = pygame.transform.scale(self.bullet_image, (25, 25))
         
         # Walking properties
-        self.move_direction = 1  
-        self.move_speed = 2  
+        self.move_speed = 2
         self.start_x = x  
-        self.move_range = move_range  
+        self.move_range = move_range
+        self.facing_left = False
 
     def update(self):
-       # Move the boss within the defined range
-        self.rect.x += self.move_speed * self.move_direction
-        if self.rect.x > self.start_x + self.move_range:
-            self.move_direction = -1  # Move left
-        elif self.rect.x < self.start_x - self.move_range:
-            self.move_direction = 1  # Move right
+       # Move within the defined range
+        if player.char_1_rect.centerx < self.rect.centerx:  
+            if self.rect.x > self.start_x - self.move_range: 
+                self.rect.x -= self.move_speed
+            if self.facing_left:
+                self.facing_left = True
+                self.image = pygame.transform.flip(self.original_image, True, False)
+                
+        elif player.char_1_rect.centerx > self.rect.centerx:  
+            if self.rect.x < self.start_x + self.move_range:
+                self.rect.x += self.move_speed
+            if not self.facing_left:
+                self.facing_left = False
+                self.image = self.original_image
             
         # Automatic shooting mechanism
         self.shoot_timer += 1
         if self.shoot_timer >= self.shoot_interval:
             self.shoot_timer = 0
             self.shoot_bullet()
+            
+        self.update_bullets()
         
     def shoot_bullet(self):
-        # Boss shoots a bullet towards the player
-        direction = -1 if self.rect.centerx > player.char_1_rect.centerx else 1
-        boss_bullet = Bullet(self.rect.centerx, self.rect.centery, direction)
-        bullet_group.add(boss_bullet)
-
-    def draw(self):
+        # Create a new bullet sprite
+        bullet = BossBullet(
+            self.rect.centerx,
+            self.rect.centery,
+            self.bullet_image,
+            self.bullet_speed,
+            player.char_1_rect.centerx)  
+        self.bullets.add(bullet)
+        
+        # Flip bullet image if boss is facing left
+        if self.facing_left:
+            bullet.image = pygame.transform.flip(bullet.image, True, False)
+        self.bullets.add(bullet)
+        
+    def update_bullets(self):
+        self.bullets.update()
+        # Remove bullets that are off screen
+        for bullet in self.bullets:
+            if bullet.rect.right < 0 or bullet.rect.left > 720:
+                bullet.kill()
+    
+    def draw(self,screen):
         screen.blit(self.image, self.rect)
         ratio = self.health / self.max_health
         pygame.draw.rect(screen, RED, (self.rect.x, self.rect.y - 10, 120, 10))
         pygame.draw.rect(screen, GREEN, (self.rect.x, self.rect.y - 10, 120 * ratio, 10))
+        self.bullets.draw(screen)
+    
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            self.kill()
+            
+class BossBullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, bullet_image, speed, target_x):
+        super().__init__()
+        self.image = bullet_image
+        self.rect = self.image.get_rect(center=(x, y))
+        self.speed = speed
+        # Calculate direction based on target position
+        self.direction = -1 if x > target_x else 1
 
-# Initialize boss
+    def update(self):
+        self.rect.x += self.speed * self.direction
+
 boss = ghost_boss(500, 250,move_range=200)  
 all_sprites.add(boss)
 
@@ -426,7 +474,7 @@ while run:
 
     # Draw boss
     boss.update()
-    boss.draw()
+    boss.draw(screen)
     
     if level_next == True:
         pass
