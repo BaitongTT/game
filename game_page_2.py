@@ -171,12 +171,14 @@ enemy_rect = enemy_image.get_rect()
         screen.blit(self.image, self.rect)
 enemy = Enemy(100, 215)'''
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x_position, y_position,move_range=200):
+    def __init__(self, x_position, y_position, move_range=400):
         super().__init__()
         self.original_image = pygame.image.load("Image/ghost_2.png")
         self.original_image = pygame.transform.scale(self.original_image, (150, 150))
         self.image = self.original_image
         self.rect = self.image.get_rect()
+        self.speed = 2
+        self.direction = 1
        
        # Set initial position
         self.rect.x = x_position
@@ -186,8 +188,8 @@ class Enemy(pygame.sprite.Sprite):
         self.absolute_x = x_position
        
         self.move_range = move_range
-        self.health = 100  
-        self.max_health = 100
+        self.health = 150  
+        self.max_health = 150
         self.shoot_timer = 0 
         self.shoot_interval = 120
         self.bullets = pygame.sprite.Group()  # Create a group of bullets inside
@@ -261,17 +263,17 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
     '''def move(self):
-        # Move in the specified direction
-        self.x += self.speed * self.direction
-        self.rect.topleft = (self.x, self.y)
+        # Move the enemy within the allowed range
+        if self.direction == 1:  # Moving right
+            self.start_x += self.speed
+            if self.start_x >= (self.start_x + self.move_range):  # Check if it has moved too far right
+                self.direction = -1  # Change direction to left
+        elif self.direction == -1:  # Moving left
+            self.start_x -= self.speed
+            if self.start_x <= (self.start_x - self.move_range):  # Check if it has moved too far left
+                self.direction = 1  # Change direction to right
 
-        if self.rect.left <= self.x_position:  
-            self.direction = 1  
-            self.rect.left = self.x_position 
-        elif self.rect.right >= self.x_position + self.move_range:  
-            self.direction = -1  
-            self.rect.right = self.x_position + self.move_range'''
-            
+        self.rect.topleft = (self.start_x, self.start_y)'''
 class GhostBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, bullet_image, speed, target_x):
         super().__init__()
@@ -421,17 +423,6 @@ class Bullet(pygame.sprite.Sprite):
         # Remove the bullet if it goes off the screen
         if self.rect.right < 0 or self.rect.left > 720:
             self.kill()
-
-        #check collision with the ghost
-        '''if pygame.sprite.spritecollide(player, bullet_group, False):
-            if player.alive:
-                print("hits!")
-                self.kill()
-        for enemy in enemy_group:
-            if pygame.sprite.spritecollide(enemy, bullet_group, False):
-                if enemy.alive:
-                    enemy.health -= 50
-                    self.kill()'''
 
 #create sprite groups
 bullet_group = pygame.sprite.Group()

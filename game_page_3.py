@@ -435,6 +435,146 @@ create_blocks_2(8620, 240, 8)
 create_blocks_2(9000, 180, 15)
 create_blocks_2(9700, 361, 50)
 create_ghost_boss(10000, 200)
+
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, x_position, y_position, move_range=400):
+        super().__init__()
+        self.original_image = pygame.image.load("Image/ghost_2.png")
+        self.original_image = pygame.transform.scale(self.original_image, (150, 150))
+        self.image = self.original_image
+        self.rect = self.image.get_rect()
+        self.speed = 2
+        self.direction = 1
+       
+       # Set initial position
+        self.rect.x = x_position
+        self.rect.y = y_position
+        self.start_x = x_position
+        self.start_y = y_position
+        self.absolute_x = x_position
+       
+        self.move_range = move_range
+        self.health = 150  
+        self.max_health = 150
+        self.shoot_timer = 0 
+        self.shoot_interval = 120
+        self.bullets = pygame.sprite.Group()  # Create a group of bullets inside
+        self.bullet_speed = 7
+        self.bullet_image = pygame.image.load("Image/action_ghost_2.png").convert_alpha()
+        self.bullet_image = pygame.transform.scale(self.bullet_image, (25, 25))
+        
+        # Walking properties
+        self.move_speed = 2
+        self.facing_left = False
+
+    def update(self, scroll_x):
+        self.rect.x = self.absolute_x - scroll_x
+        if -150 <= self.rect.x <= 720:
+        # Move within the defined range
+            if player.char_1_rect.centerx < self.rect.centerx:  
+                if self.rect.x > self.start_x - self.move_range: 
+                    self.rect.x -= self.move_speed
+                if self.facing_left:
+                    self.facing_left = True
+                    self.image = pygame.transform.flip(self.original_image, True, False)
+                    
+            elif player.char_1_rect.centerx > self.rect.centerx:  
+                if self.rect.x < self.start_x + self.move_range:
+                    self.rect.x += self.move_speed
+                if not self.facing_left:
+                    self.facing_left = False
+                    self.image = self.original_image
+            
+        # Automatic shooting mechanism
+        self.shoot_timer += 1
+        if self.shoot_timer >= self.shoot_interval:
+            self.shoot_timer = 0
+            self.shoot_bullet()
+            
+        self.update_bullets()
+        
+    def shoot_bullet(self):
+        # Create a new bullet sprite
+        bullet = GhostBullet(
+            self.rect.centerx,
+            self.rect.centery,
+            self.bullet_image,
+            self.bullet_speed,
+            player.char_1_rect.centerx)  
+        self.bullets.add(bullet)
+        
+        # Flip bullet image if boss is facing left
+        if self.facing_left:
+            bullet.image = pygame.transform.flip(bullet.image, True, False)
+        self.bullets.add(bullet)
+        
+    def update_bullets(self):
+        self.bullets.update()
+        # Remove bullets that are off screen
+        for bullet in self.bullets:
+            if bullet.rect.right < 0 or bullet.rect.left > 720:
+                bullet.kill()
+    
+    def draw(self,screen):
+        if -150 <= self.rect.x <= 720:
+            screen.blit(self.image, self.rect)
+            ratio = self.health / self.max_health
+            pygame.draw.rect(screen, RED, (self.rect.x, self.rect.y - 10, 120, 10))
+            pygame.draw.rect(screen, GREEN, (self.rect.x, self.rect.y - 10, 120 * ratio, 10))
+            self.bullets.draw(screen)
+    
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            self.kill()
+
+    '''def move(self):
+        # Move the enemy within the allowed range
+        if self.direction == 1:  # Moving right
+            self.start_x += self.speed
+            if self.start_x >= (self.start_x + self.move_range):  # Check if it has moved too far right
+                self.direction = -1  # Change direction to left
+        elif self.direction == -1:  # Moving left
+            self.start_x -= self.speed
+            if self.start_x <= (self.start_x - self.move_range):  # Check if it has moved too far left
+                self.direction = 1  # Change direction to right
+
+        self.rect.topleft = (self.start_x, self.start_y)'''
+class GhostBullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, bullet_image, speed, target_x):
+        super().__init__()
+        self.image = bullet_image
+        self.rect = self.image.get_rect(center=(x, y))
+        self.absolute_x = x 
+        self.speed = speed
+        # Calculate direction based on target position
+        self.direction = -1 if x > target_x else 1
+
+    def update(self):
+        self.absolute_x += self.speed * self.direction
+        self.rect.x += self.speed * self.direction
+
+def create_ghost(x_position, y_position, move_range):
+    #Create a ghost at the specified position
+    #x_position: x coordinate in world space
+    #y_position: y coordinate
+    #move_range: how far the ghost can move left/right from its starting position
+
+    enemy = Enemy(x_position, y_position, move_range)
+    enemy_group.add(enemy)
+    return enemy
+
+#position of ghosts
+create_ghost(1200, 31, 600)
+create_ghost(3350, 31, 280)
+create_ghost(4600, 213, 520)
+create_ghost(5600, 92, 320)
+create_ghost(6320, 31, 480)
+create_ghost(7300, 151, 400)
+create_ghost(8200, 151, 320)
+create_ghost(9000, 31, 600)
+
+enemy = Enemy(100, 215)
   
 #moving objects
 speed = 15
@@ -480,6 +620,24 @@ while run:
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
+
+    for enemy in enemy_group:
+        enemy.update(scroll_x)
+        enemy.draw(screen)
+        if -150 <= enemy.rect.x <= 720:
+            for bullet in bullet_group:
+                if enemy.rect.colliderect(bullet.rect):
+                    enemy.take_damage(10)
+                    bullet.kill()
+            
+            # Check for collisions between boss bullets and players.
+            for bullet in enemy.bullets:
+                if bullet.rect.colliderect(player.char_1_rect):
+                    player.health -= 10  
+                    bullet.kill()
+        # End game if boss health reaches 0
+        if enemy.health <= 0:
+            enemy.kill()
     
     for boss in boss_group:
         boss.update(scroll_x)
