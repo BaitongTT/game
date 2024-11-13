@@ -556,6 +556,7 @@ while run:
 
     if level_next == True:
         break
+    
     for enemy in enemy_group:
         enemy.update(scroll_x)
         enemy.draw(screen)
