@@ -40,6 +40,7 @@ class character(pygame.sprite.Sprite):
         self.start_ammo = ammo
         self.enemy = enemy
         self.start_enemy = enemy
+        self.remaining_health = 0
        
         # properties for jumping
         self.jumping = False
@@ -134,6 +135,7 @@ class character(pygame.sprite.Sprite):
 
     def update(self):
         self.check_alive()
+        self.remaining_health = self.health
 
 # sprite groups
 all_sprites = pygame.sprite.Group()
@@ -433,9 +435,6 @@ class Bullet(pygame.sprite.Sprite):
                     enemy.health -= 50
                     self.kill()'''
 
-#create sprite groups
-bullet_group = pygame.sprite.Group()
-
 #ITEMS
 '''
 class Item_3(pygame.sprite.Sprite):
@@ -553,6 +552,7 @@ while run:
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
     player.update()
+    remaining_health_carried_over = player.remaining_health
 
     if level_next == True:
         break

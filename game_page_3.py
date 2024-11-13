@@ -1,5 +1,5 @@
 import pygame
-from game_page_2 import selected_character_index,character,HealthBar
+from game_page_2 import selected_character_index,character,HealthBar,remaining_health_carried_over
 pygame.init()
 
 #framerate
@@ -116,6 +116,23 @@ class character(pygame.sprite.Sprite):
     def draw(self):
         # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
+        
+    def shoot(self):
+        # Spawn bullet based on character's position and direction
+        #add the player size because i dont want the bullet to come out in the middle of player
+        #.centery (spawn at the mid of the player)
+        bullet = Bullet(self.char_1_rect.centerx + (0.6 * self.char_1_rect.size[0] * self.direction), 
+        self.char_1_rect.centery, self.direction)
+        bullet_group.add(bullet)
+
+    def check_alive(self):
+        if self.health <= 0:
+            self.health = 0
+            self.speed = 0
+            self.alive = False
+
+    def update(self):
+        self.check_alive()
 
 # sprite groups
 obstacles = pygame.sprite.Group()
@@ -399,6 +416,7 @@ class HealthBar():
     def draw(self,health):
         self.health = health
         ratio = self.health/self.max_health
+        player.health = remaining_health_carried_over
         pygame.draw.rect(screen,BLACK,(self.x-2,self.y-2,150,20))
         pygame.draw.rect(screen,RED,(self.x,self.y,150,20))
         pygame.draw.rect(screen,GREEN,(self.x,self.y,150*ratio,20))
