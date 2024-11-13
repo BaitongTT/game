@@ -140,7 +140,8 @@ all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
-item_box_group = pygame.sprite.Group()
+item_box_group_health_item = pygame.sprite.Group()
+item_box_group_reduce_blood_item = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
 
 # Enemy
@@ -298,16 +299,6 @@ def create_ghost(x_position, y_position, move_range):
     enemy_group.add(enemy)
     return enemy
 
-#position of ghosts
-create_ghost(780, 213, 480)
-create_ghost(1840, 92, 560)
-create_ghost(3220, 31, 600)
-create_ghost(4000, 151, 400)
-create_ghost(5240, 92, 600)
-create_ghost(6440, 31, 600)
-create_ghost(7920, 151, 600)
-create_ghost(8520, 213, 800)
-
 enemy = Enemy(100, 215)
 
 #player
@@ -323,10 +314,13 @@ class ItemBox(pygame.sprite.Sprite):
         self.item_type = item_type
         self.image = item_boxes[self.item_type]
         self.rect = self.image.get_rect()
-        self.rect.midtop = (x + 40//2,y+(40-self.image.get_height()))
+        self.rect = self.image.get_rect()
+        self.world_x = x
+        self.world_y = y
+        self.rect.topleft = (self.world_x, self.world_y)
 
-    def update(self):
-        self.rect.x += 0
+    def update(self,scroll_x):
+        self.rect.x = self.world_x-scroll_x
     #check if the player has picked up the box
         if self.rect.colliderect(player.char_1_rect):
             #check what kind of box it was
@@ -349,10 +343,15 @@ item_boxes = {
     'Reduce_blood' : reduce_blood_box_img
 }
 
-# temp - create item boxes
-health_item  = ItemBox('Health',200,300)
-reduce_blood_item = ItemBox('Reduce_blood',400,300)
-item_box_group.add(health_item,reduce_blood_item)
+def create_item_health_item(x, y):
+    health_item  = ItemBox('Health',x,y)
+    item_box_group_health_item.add(health_item)    
+    return health_item
+
+def create_item_reduce_blood_item(x, y):
+    reduce_blood_item  = ItemBox('Reduce_blood',x,y)
+    item_box_group_reduce_blood_item.add(reduce_blood_item)    
+    return reduce_blood_item
 
 # HealthBar
 class HealthBar():
@@ -416,27 +415,9 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.right < 0 or self.rect.left > 720:
             self.kill()
 
-#create sprite groups
-bullet_group = pygame.sprite.Group()
-
-#ITEMS
-'''
-class Item_3(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
-        super().__init__()
-        self.image = load_and_scale_image("Image/item_3.png", 1)  
-        self.rect = self.image.get_rect(topleft=(x, y))
-
-class Item_4(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
-        super().__init__()
-        self.image = load_and_scale_image("Image/item_4.png", 1)  
-        self.rect = self.image.get_rect(topleft=(x, y))
-'''
 #the floor section
 dirt_blocks = pygame.sprite.Group()
 for i in range(0, 9000, 71):  # start, how long, space (dirt = 40, lava = 71)
-    #block = DirtBlock(i, 361, 9)
     block = LavaBlock(i, 361, 9)
     dirt_blocks.add(block)
 
@@ -447,20 +428,6 @@ def create_blocks_1(start_x, y_pos, count):
         block = DirtBlock(x_position, y_pos, 9)
         dirt_blocks.add(block)
 
-#items
-'''
-def create_item_3(start_x, y_pos, count): 
-    for step in range(count):
-        x_position = start_x + (step * 40)
-        item = Item_3(x_position, y_pos, 9)
-        dirt_blocks.add(item)
-
-def create_item_4(start_x, y_pos, count): 
-    for step in range(count):
-        x_position = start_x + (step * 40)
-        item = Item_4(x_position, y_pos, 9)
-        dirt_blocks.add(item)
-'''
 #y = 361(first(floor)), 300(second), 240(third), 180(forth)
 #the last number is number of blocks
 #the first 9000 blocks is the first session
@@ -470,26 +437,32 @@ create_blocks_1(0, 361, 6)
 create_blocks_1(300, 300, 6)
 create_blocks_1(540, 240, 5)
 create_blocks_1(780, 361, 12)
-#create_item_4(1140, 298, 1) #item_4
+create_ghost(780, 213, 480) # ghost
 create_blocks_1(1300, 300, 10)
 create_blocks_1(1840, 240, 14)
+create_ghost(1840, 92, 560) # ghost
 create_blocks_1(2500, 300, 10)
 create_blocks_1(2900, 240, 8)
 create_blocks_1(3220, 180, 15)
+create_ghost(3220, 31, 600) # ghost
 create_blocks_1(4000, 300, 10)
+create_ghost(4000, 151, 400)  # ghost
 create_blocks_1(4400, 240, 9)
 create_blocks_1(4800, 361, 6)
 create_blocks_1(5040, 300, 5)
-create_blocks_1(5240, 240, 15)
+create_blocks_1(5240, 240, 15) 
+create_ghost(5240, 92, 600) # ghost
 create_blocks_1(6000, 300, 8)
 create_blocks_1(6320, 240, 3)
 create_blocks_1(6440, 180, 15)
+create_ghost(6440, 31, 600) # ghost
 create_blocks_1(7040, 240, 8)
-#create_item_2(7300, 177, 1) #item_2
 create_blocks_1(7360, 180, 8)
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
+create_ghost(7920, 151, 600) # ghost
 create_blocks_1(8520, 361, 20)
+create_ghost(8520, 213, 800) # ghost
 #end of first session
 
 #moving objects
@@ -517,8 +490,10 @@ while run:
     player.draw()
     #enemy.move()
     enemy.draw(screen)
-    item_box_group.update()
-    item_box_group.draw(screen)
+    item_box_group_health_item.update(scroll_x)
+    item_box_group_health_item.draw(screen)
+    item_box_group_reduce_blood_item.update(scroll_x)
+    item_box_group_reduce_blood_item.draw(screen)
     #show player health
     health_bar.draw(player.health)
     #show enemy
