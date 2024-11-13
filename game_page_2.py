@@ -265,6 +265,9 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.right < 0 or self.rect.left > 720:
             self.kill()
 
+#create sprite groups
+bullet_group = pygame.sprite.Group()
+
 #ITEMS
 '''
 class Item_3(pygame.sprite.Sprite):
@@ -400,9 +403,9 @@ while run:
                 player.jump()
             if event.key == pygame.K_SPACE:
                 # Spawn bullet based on character's position and direction
-                #.right (spawn at the right of the player)
+                #add the player size because i dont want the bullet to come out in the middle of player
                 #.centery (spawn at the mid of the player)
-                bullet = Bullet(player.char_1_rect.right, player.char_1_rect.centery, player.direction)
+                bullet = Bullet(player.char_1_rect.centerx + (0.6 * player.char_1_rect.size[0] * player.direction), player.char_1_rect.centery, player.direction)
                 bullet_group.add(bullet)
 
         #(released)
