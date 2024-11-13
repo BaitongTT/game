@@ -117,6 +117,13 @@ class character(pygame.sprite.Sprite):
         # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
 
+    def shoot(self):
+        # Spawn bullet based on character's position and direction
+        #add the player size because i dont want the bullet to come out in the middle of player
+        #.centery (spawn at the mid of the player)
+        bullet = Bullet(self.char_1_rect.centerx + (0.6 * self.char_1_rect.size[0] * self.direction), 
+        self.char_1_rect.centery, self.direction)
+        bullet_group.add(bullet)
 
 # sprite groups
 all_sprites = pygame.sprite.Group()
@@ -402,12 +409,8 @@ while run:
             if event.key == pygame.K_UP: 
                 player.jump()
             if event.key == pygame.K_SPACE:
-                # Spawn bullet based on character's position and direction
-                #add the player size because i dont want the bullet to come out in the middle of player
-                #.centery (spawn at the mid of the player)
-                bullet = Bullet(player.char_1_rect.centerx + (0.6 * player.char_1_rect.size[0] * player.direction), player.char_1_rect.centery, player.direction)
-                bullet_group.add(bullet)
-
+                player.shoot()
+                
         #(released)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
