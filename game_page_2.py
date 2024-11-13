@@ -40,7 +40,6 @@ class character(pygame.sprite.Sprite):
         self.start_ammo = ammo
         self.enemy = enemy
         self.start_enemy = enemy
-        self.remaining_health = 0
        
         # properties for jumping
         self.jumping = False
@@ -135,7 +134,6 @@ class character(pygame.sprite.Sprite):
 
     def update(self):
         self.check_alive()
-        self.remaining_health = self.health
 
 # sprite groups
 all_sprites = pygame.sprite.Group()
@@ -173,12 +171,14 @@ enemy_rect = enemy_image.get_rect()
         screen.blit(self.image, self.rect)
 enemy = Enemy(100, 215)'''
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x_position, y_position,move_range=200):
+    def __init__(self, x_position, y_position, move_range=400):
         super().__init__()
         self.original_image = pygame.image.load("Image/ghost_2.png")
         self.original_image = pygame.transform.scale(self.original_image, (150, 150))
         self.image = self.original_image
         self.rect = self.image.get_rect()
+        self.speed = 2
+        self.direction = 1
        
        # Set initial position
         self.rect.x = x_position
@@ -188,8 +188,8 @@ class Enemy(pygame.sprite.Sprite):
         self.absolute_x = x_position
        
         self.move_range = move_range
-        self.health = 100  
-        self.max_health = 100
+        self.health = 150  
+        self.max_health = 150
         self.shoot_timer = 0 
         self.shoot_interval = 120
         self.bullets = pygame.sprite.Group()  # Create a group of bullets inside
@@ -263,17 +263,17 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
     '''def move(self):
-        # Move in the specified direction
-        self.x += self.speed * self.direction
-        self.rect.topleft = (self.x, self.y)
+        # Move the enemy within the allowed range
+        if self.direction == 1:  # Moving right
+            self.start_x += self.speed
+            if self.start_x >= (self.start_x + self.move_range):  # Check if it has moved too far right
+                self.direction = -1  # Change direction to left
+        elif self.direction == -1:  # Moving left
+            self.start_x -= self.speed
+            if self.start_x <= (self.start_x - self.move_range):  # Check if it has moved too far left
+                self.direction = 1  # Change direction to right
 
-        if self.rect.left <= self.x_position:  
-            self.direction = 1  
-            self.rect.left = self.x_position 
-        elif self.rect.right >= self.x_position + self.move_range:  
-            self.direction = -1  
-            self.rect.right = self.x_position + self.move_range'''
-            
+        self.rect.topleft = (self.start_x, self.start_y)'''
 class GhostBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, bullet_image, speed, target_x):
         super().__init__()
@@ -314,39 +314,33 @@ enemy = Enemy(100, 215)
 reduce_blood_value = 100   
 character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
 player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
-
+player_rect = pygame.Rect(100,100, 50, 50)
 
 # ITEMS
 class ItemBox(pygame.sprite.Sprite):
-    def __init__(self, item_type, x, y):
-        super().__init__()  
+    def __init__(self,item_type,x,y):
+        pygame.sprite.Sprite.__init__(self)
         self.item_type = item_type
-        self.x = x
-        self.y = y
-        item_images = {
-            'Health': 'Image/item_3.png',
-            'Reduce_blood': 'Image/item_4.png'
-        }  
-        if self.item_type in item_images:
-            self.image = pygame.image.load(item_images[self.item_type])
-        self.image = pygame.transform.scale(self.image, (40, 40))  
+        self.image = item_boxes[self.item_type]
         self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-    ''' 
+        self.rect.midtop = (x + 40//2,y+(40-self.image.get_height()))
+
     def update(self):
+        self.rect.x += 0
     #check if the player has picked up the box
-        if pygame.sprite.collide_rect(self,player):
+        if self.rect.colliderect(player.char_1_rect):
             #check what kind of box it was
             if self.item_type == 'Health' :
                 player.health += 25
                 if player.health > player.max_health :
                     player.health = player.max_health
             elif self.item_type == 'Reduce_blood' :
-                player.reduce_blood += 15
+                player.health -=15
+                if player.health < 0:
+                    player.health = 0 
             self.kill()
-   '''
-'''
+        
+
 # pick up boxes
 health_box_img = pygame.image.load("Image/item_3.png").convert_alpha()
 reduce_blood_box_img = pygame.image.load("Image/item_4.png").convert_alpha()
@@ -354,13 +348,11 @@ item_boxes = {
     'Health': health_box_img,
     'Reduce_blood' : reduce_blood_box_img
 }
-'''
+
 # temp - create item boxes
-health_item1  = ItemBox('Health',200, 320)
-health_item2  = ItemBox('Health',300, 320)
-reduce_blood_item1 = ItemBox('Reduce_blood',400, 320)
-reduce_blood_item2 = ItemBox('Reduce_blood',500, 320)
-item_box_group.add(health_item1,health_item2,reduce_blood_item1,reduce_blood_item2)
+health_item  = ItemBox('Health',200,300)
+reduce_blood_item = ItemBox('Reduce_blood',400,300)
+item_box_group.add(health_item,reduce_blood_item)
 
 # HealthBar
 class HealthBar():
@@ -424,16 +416,8 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.right < 0 or self.rect.left > 720:
             self.kill()
 
-        #check collision with the ghost
-        '''if pygame.sprite.spritecollide(player, bullet_group, False):
-            if player.alive:
-                print("hits!")
-                self.kill()
-        for enemy in enemy_group:
-            if pygame.sprite.spritecollide(enemy, bullet_group, False):
-                if enemy.alive:
-                    enemy.health -= 50
-                    self.kill()'''
+#create sprite groups
+bullet_group = pygame.sprite.Group()
 
 #ITEMS
 '''
@@ -552,11 +536,9 @@ while run:
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
     player.update()
-    remaining_health_carried_over = player.remaining_health
 
     if level_next == True:
         break
-    
     for enemy in enemy_group:
         enemy.update(scroll_x)
         enemy.draw(screen)
