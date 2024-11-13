@@ -31,6 +31,7 @@ class character(pygame.sprite.Sprite):
         self.flip = False
         self.char_1 = pygame.image.load(image_path).convert_alpha()
         self.char_1_rect = self.char_1.get_rect()
+        self.rect = self.char_1.get_rect() 
         self.char_1_rect.center = (x, y)
         self.health = 100
         self.max_health = 100
@@ -68,7 +69,7 @@ class character(pygame.sprite.Sprite):
         self.char_1_rect.x += change_x
         self.blocked = False
 
-        
+
         for block in dirt_blocks: # Check for collisions with blocks
             if self.char_1_rect.colliderect(block.rect):
                 if change_x > 0:  # Moving right
@@ -125,12 +126,22 @@ class character(pygame.sprite.Sprite):
         self.char_1_rect.centery, self.direction)
         bullet_group.add(bullet)
 
+    def check_alive(self):
+        if self.health <= 0:
+            self.health = 0
+            self.speed = 0
+            self.alive = False
+
+    def update(self):
+        self.check_alive()
+
 # sprite groups
 all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 item_box_group = pygame.sprite.Group()
+lava_group = pygame.sprite.Group()
 
 # Enemy
 enemy_image = pygame.image.load('Image/ghost_2.png')  
@@ -253,6 +264,8 @@ class LavaBlock(pygame.sprite.Sprite):
         super().__init__()
         self.image = load_and_scale_image("Image/lava.png", 1)  
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.rect.x = x
+        self.rect.y = y
     
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
@@ -271,6 +284,17 @@ class Bullet(pygame.sprite.Sprite):
         # Remove the bullet if it goes off the screen
         if self.rect.right < 0 or self.rect.left > 720:
             self.kill()
+
+        #check collision with the ghost
+        if pygame.sprite.spritecollide(player, bullet_group, False):
+            if player.alive:
+                print("hits!")
+                self.kill()
+        for enemy in enemy_group:
+            if pygame.sprite.spritecollide(enemy, bullet_group, False):
+                if enemy.alive:
+                    enemy.health -= 50
+                    self.kill()
 
 #create sprite groups
 bullet_group = pygame.sprite.Group()
@@ -391,6 +415,7 @@ while run:
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
+    player.update()
     
     if level_next == True:
         break
@@ -410,7 +435,7 @@ while run:
                 player.jump()
             if event.key == pygame.K_SPACE:
                 player.shoot()
-                
+
         #(released)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
