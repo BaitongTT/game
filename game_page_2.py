@@ -430,8 +430,7 @@ def create_blocks_1(start_x, y_pos, count):
 
 #y = 361(first(floor)), 300(second), 240(third), 180(forth)
 #the last number is number of blocks
-#the first 9000 blocks is the first session
-#the second 9000 blocks is the second session
+#the first 9110 blocks is the first session
 #the last 500 blocks is the end
 create_blocks_1(0, 361, 6)
 create_blocks_1(300, 300, 6)
@@ -442,6 +441,7 @@ create_blocks_1(1300, 300, 10)
 create_blocks_1(1840, 240, 14)
 create_ghost(1840, 92, 560) # ghost
 create_blocks_1(2500, 300, 10)
+create_item_health_item(3000,190) #Item
 create_blocks_1(2900, 240, 8)
 create_blocks_1(3220, 180, 15)
 create_ghost(3220, 31, 600) # ghost
@@ -449,6 +449,7 @@ create_blocks_1(4000, 300, 10)
 create_ghost(4000, 151, 400)  # ghost
 create_blocks_1(4400, 240, 9)
 create_blocks_1(4800, 361, 6)
+create_item_health_item(4900,310) #Item
 create_blocks_1(5040, 300, 5)
 create_blocks_1(5240, 240, 15) 
 create_ghost(5240, 92, 600) # ghost
@@ -458,6 +459,7 @@ create_blocks_1(6440, 180, 15)
 create_ghost(6440, 31, 600) # ghost
 create_blocks_1(7040, 240, 8)
 create_blocks_1(7360, 180, 8)
+create_item_health_item(7500,130) #Item
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
 create_ghost(7920, 151, 600) # ghost

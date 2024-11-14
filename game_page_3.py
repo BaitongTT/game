@@ -494,8 +494,7 @@ def create_blocks_2(start_x, y_pos, count):
         
 #y = 361(first(floor)), 300(second), 240(third), 180(forth)
 #the last number is number of blocks
-#the first 9000 blocks is the first session
-#the second 9000 blocks is the second session
+#the second 10500 blocks is the second session
 #the last 500 blocks is the end
 
 create_blocks_2(0, 361, 15   )
