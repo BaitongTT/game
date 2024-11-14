@@ -1,5 +1,5 @@
 import pygame
-from Button import Button
+import pygame_button
 pygame.init()
 
 #framerate
@@ -19,14 +19,32 @@ background_character_1 = pygame.image.load("Image/select_1.png").convert_alpha()
 background_character_2 = pygame.image.load("Image/select_2.png").convert_alpha()
 background_character_3 = pygame.image.load("Image/select_3.png").convert_alpha()
 
+class button:
+    def __init__(self, image_path, position, scale = 1.0):
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.rect = self.image.get_rect(topleft = position)
+    
+    def draw(self, window):
+        window.blit(self.image, self.rect)
+        
+    def is_pressed(self):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()[0]
+        
+        if self.rect.collidepoint(mouse_pos):
+            if mouse_pressed:
+                return True
+            
+        return False
+
 # set button
-button_start = Button("Image/button_start.png" ,(300,320))  #Button เป็นการกำหนดว่ารูปนี้คือปุ่ม
-button_howtoplay= Button("Image/button_howtoplay.png",(0,250))
-character_1 = Button("Image/1_charecter.png",(60,133))
-character_2 = Button("Image/2_charecter.png",(269,135))
-character_3 = Button("Image/3_charecter.png",(479,135))
-button_back = Button("Image/button_back.png",(252,327))
-button_play = Button("Image/button_play.png",(365,327))
+button_start = button("Image/button_start.png" ,(300,320))  #Button
+button_howtoplay= button("Image/button_howtoplay.png",(0,250))
+character_1 = button("Image/1_charecter.png",(60,133))
+character_2 = button("Image/2_charecter.png",(269,135))
+character_3 = button("Image/3_charecter.png",(479,135))
+button_back = button("Image/button_back.png",(252,327))
+button_play = button("Image/button_play.png",(365,327))
 
 
 # variable
