@@ -512,12 +512,12 @@ create_blocks_2(2700, 240, 6)
 create_item_reduce_blood_item(2800,190) #Item
 create_blocks_2(3000, 180, 6)
 create_blocks_2(3350, 180, 7)
+create_ghost(3400, 31, 480) #ghost
 create_blocks_2(3700, 300, 6)
 create_blocks_2(4000, 240, 5)
 create_blocks_2(4300, 300, 6)
-create_item_health_item(4900,310) #Item
 create_blocks_2(4600, 361, 13)
-create_ghost(3400, 31, 480) #ghost
+create_item_health_item(5000,310) #Item
 create_blocks_2(5240, 300, 7)
 create_blocks_2(5600, 240, 8)
 create_blocks_2(6000, 180, 5)
@@ -525,16 +525,20 @@ create_ghost(6500, 31, 480) #ghost
 create_blocks_2(6320, 180, 12)
 create_blocks_2(6900, 240, 6)
 create_blocks_2(7300, 300, 10)
+create_item_reduce_blood_item(7500,240) #Item 
 create_blocks_2(7780, 361, 8)
 create_blocks_2(8200, 300, 8)
 create_blocks_2(8620, 240, 8)
+create_item_health_item(8800,190) #Item
 create_ghost(9500, 31, 480) #ghost
 create_blocks_2(9000, 180, 15)
 create_blocks_2(9700, 361, 50)
+create_item_health_item(9800,310) #Item
 create_ghost_boss(10000, 200)  #ghost boss
+
   
 #moving objects
-speed = 5
+speed = 4
 scroll_x = 0 
 end_of_level_x = 10500 
 level_next = False

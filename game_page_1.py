@@ -4,7 +4,7 @@ pygame.init()
 
 #framerate
 clock = pygame.time.Clock()
-FPS = 80
+FPS = 70
 
 pygame.display.set_caption('Trick or Treat' )
 screen = pygame.display.set_mode((720, 400))
