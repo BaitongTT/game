@@ -80,8 +80,9 @@ class character(pygame.sprite.Sprite):
 
         if self.char_1_rect.left < 0:  #dont go out of the left side
             self.char_1_rect.left = 0
-        if self.char_1_rect.right > 720:  #dont go out of the right side
-            self.char_1_rect.right = 720
+        #360 is length (720) divided by 2 to make the char be in the middle of the frame
+        if self.char_1_rect.right > 360:  #dont go out of the right side
+            self.char_1_rect.right = 360
 
     def update_jump(self,dirt_blocks):
         self.on_ground = False
