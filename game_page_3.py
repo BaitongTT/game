@@ -600,6 +600,7 @@ while run:
         # End game if boss health reaches 0
         if enemy.health <= 0:
             enemy.kill()
+        #if the player touch the enemy, the health bar will get deducted
         if enemy.rect.x < player.y:
             player.health -= 50
             enemy.kill()
