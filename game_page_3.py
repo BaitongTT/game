@@ -39,6 +39,7 @@ class character(pygame.sprite.Sprite):
         self.start_ammo = ammo
         self.enemy = enemy
         self.start_enemy = enemy
+        self.y = y
         
         # properties for jumping
         self.jumping = False
@@ -257,7 +258,7 @@ class ghost_boss(pygame.sprite.Sprite):
         self.absolute_x = x_position
        
         self.move_range = move_range
-        self.health = 500  
+        self.health = 500
         self.max_health = 500
         self.shoot_timer = 0 
         self.shoot_interval = 120
@@ -581,7 +582,7 @@ while run:
     player.move(movetothe_left, movetothe_right,dirt_blocks)
     dirt_blocks.draw(screen)
     move_objects_for_right(speed, movetothe_right)
-    
+
     for enemy in enemy_group:
         enemy.update(scroll_x)
         enemy.draw(screen)
@@ -599,6 +600,10 @@ while run:
         # End game if boss health reaches 0
         if enemy.health <= 0:
             enemy.kill()
+        if enemy.rect.x < player.y:
+            player.health -= 50
+            enemy.kill()
+            break
     
     for boss in boss_group:
         boss.update(scroll_x)

@@ -40,6 +40,7 @@ class character(pygame.sprite.Sprite):
         self.start_ammo = ammo
         self.enemy = enemy
         self.start_enemy = enemy
+        self.y = y
        
         # properties for jumping
         self.jumping = False
@@ -534,6 +535,10 @@ while run:
         # End game if boss health reaches 0
         if enemy.health <= 0:
             enemy.kill()
+        if enemy.rect.x < player.y:
+            player.health -= 50
+            enemy.kill()
+            break
     
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:  
