@@ -1,16 +1,7 @@
 import pygame
-import pygame_button
-pygame.init()
 
-#framerate
-clock = pygame.time.Clock()
-FPS = 70
-
-pygame.display.set_caption('Trick or Treat' )
 screen = pygame.display.set_mode((720, 400))
-width, length = screen.get_size() #get the windows size
-#print(width, length) to get 1536, 864
-screen.fill((0, 0, 0))
+width, length = screen.get_size()
 
 #define colours
 RED = (255,0,0)
@@ -18,59 +9,53 @@ GREEN = (0,255,0)
 BLACK =(0,0,0)
 WHITE = (255,255,255)
 
+speed = 4
+scroll_x = 0 
+end_of_level_x = 9110   
+level_next = False
 
+health_box_img = pygame.image.load("Image/item_3.png").convert_alpha()
+reduce_blood_box_img = pygame.image.load("Image/item_4.png").convert_alpha()
+item_boxes = { 
+    'Health': health_box_img,
+    'Reduce_blood' : reduce_blood_box_img
+}
+
+# sprite groups
+all_sprites = pygame.sprite.Group()
+obstacles = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
+bullet_group = pygame.sprite.Group()
+item_box_group_health_item = pygame.sprite.Group()
+item_box_group_reduce_blood_item = pygame.sprite.Group()
+lava_group = pygame.sprite.Group()
+dirt_blocks = pygame.sprite.Group()
+
+class button:
+            def __init__(self, image_path, position, scale = 1.0):
+                self.image = pygame.image.load(image_path).convert_alpha()
+                self.rect = self.image.get_rect(topleft = position)
+            
+            def draw(self, window):
+                window.blit(self.image, self.rect)
+                
+            def is_pressed(self):
+                mouse_pos = pygame.mouse.get_pos()
+                mouse_pressed = pygame.mouse.get_pressed()[0]
+                
+                if self.rect.collidepoint(mouse_pos):
+                    if mouse_pressed:
+                        return True
+                    
+                return False
+
+            
 def load_and_scale_image(path, scale):
     image = pygame.image.load(path)
     return pygame.transform.scale(image, (image.get_width() // scale, image.get_height() // scale))
 
-#load images
-background_start = pygame.image.load("Image/background_1.png").convert_alpha()
-select_characters = pygame.image.load("Image/select_charecter.png").convert_alpha()
-background_character_1 = pygame.image.load("Image/select_1.png").convert_alpha()
-background_character_2 = pygame.image.load("Image/select_2.png").convert_alpha()
-background_character_3 = pygame.image.load("Image/select_3.png").convert_alpha()
-background2 = pygame.image.load("Image/background_2.png").convert()
-
-class button:
-    def __init__(self, image_path, position, scale = 1.0):
-        self.image = pygame.image.load(image_path).convert_alpha()
-        self.rect = self.image.get_rect(topleft = position)
-    
-    def draw(self, window):
-        window.blit(self.image, self.rect)
-        
-    def is_pressed(self):
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_pressed = pygame.mouse.get_pressed()[0]
-        
-        if self.rect.collidepoint(mouse_pos):
-            if mouse_pressed:
-                return True
-            
-        return False
-    
-# set button
-button_start = button("Image/button_start.png" ,(300,320))  #Button
-button_howtoplay= button("Image/button_howtoplay.png",(0,250))
-character_1 = button("Image/1_charecter.png",(60,133))
-character_2 = button("Image/2_charecter.png",(269,135))
-character_3 = button("Image/3_charecter.png",(479,135))
-button_back = button("Image/button_back.png",(252,327))
-button_play = button("Image/button_play.png",(365,327))    
-
-# variable
-button_value = False
-character_values = [False, False, False]
-back_value = False
-play_value = False
-selected_character_index = 0
-
-#keyboard control
-movetothe_left = False
-movetothe_right = False
-
 class character(pygame.sprite.Sprite):
-    def __init__(self,x, y,image_path , speed,ammo,enemy=None):
+    def __init__(self,x, y,image_path,speed,ammo,enemy=None):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
         self.direction = 1
@@ -86,6 +71,7 @@ class character(pygame.sprite.Sprite):
         self.start_ammo = ammo
         self.enemy = enemy
         self.start_enemy = enemy
+        self.x_vel = 0
        
         # properties for jumping
         self.jumping = False
@@ -97,30 +83,33 @@ class character(pygame.sprite.Sprite):
         self.blocked = False
         self.on_platform = False
     
-    def move(self, movetothe_left, movetothe_right,dirt_blocks):
+    def move(self, movetothe_left, movetothe_right,dirt_blocks,scroll_x, end_of_level_x):
         self.old_x = self.char_1_rect.x
         self.old_y = self.char_1_rect.y
-        change_x = 0
+        self.x_vel = 0
         if not self.blocked or self.jumping:
             if (movetothe_left):
-                change_x = -self.speed
+                self.x_vel = -self.speed
                 self.flip = True
                 self.direction = -1
             if (movetothe_right):
-                change_x = self.speed
+                self.x_vel = self.speed
                 self.flip = False
                 self.direction = 1
+            else:
+                self.x_vel = 0
+                self.rect.x += self.x_vel
 
         #update position
-        self.char_1_rect.x += change_x
+        self.char_1_rect.x += self.x_vel
         self.blocked = False
 
 
         for block in dirt_blocks: # Check for collisions with blocks
             if self.char_1_rect.colliderect(block.rect):
-                if change_x > 0:  # Moving right
+                if self.x_vel > 0:  # Moving right
                     self.char_1_rect.right = block.rect.left
-                elif change_x < 0:  # Moving left
+                elif self.x_vel < 0:  # Moving left
                     self.char_1_rect.left = block.rect.right
                 self.blocked = True
                 break
@@ -160,7 +149,7 @@ class character(pygame.sprite.Sprite):
             self.on_ground = False
             self.on_platform = False
 
-    def draw(self):
+    def draw(self,screen):
         # false part is used for fliping to not be upside down
         screen.blit(pygame.transform.flip(self.char_1,self.flip, False), self.char_1_rect)
 
@@ -244,7 +233,7 @@ class ghost(pygame.sprite.Sprite):
             self.rect.centery,
             self.bullet_image,
             self.bullet_speed,
-            player.char_1_rect.centerx)  
+            character.char_1_rect.centerx)  
         self.bullets.add(bullet)
         
         # Flip bullet image if boss is facing left
@@ -338,12 +327,12 @@ def create_blocks_1(start_x, y_pos, count):
         
 # ITEMS
 class ItemBox(pygame.sprite.Sprite):
-    def __init__(self,item_type,x,y):
+    def __init__(self,item_type,x,y,PLAYER):
         pygame.sprite.Sprite.__init__(self)
         self.item_type = item_type
         self.image = item_boxes[self.item_type]
         self.rect = self.image.get_rect()
-        self.rect = self.image.get_rect()
+        self.PLAYER = PLAYER
         self.world_x = x
         self.world_y = y
         self.rect.topleft = (self.world_x, self.world_y)
@@ -351,16 +340,16 @@ class ItemBox(pygame.sprite.Sprite):
     def update(self,scroll_x):
         self.rect.x = self.world_x-scroll_x
     #check if the player has picked up the box
-        if self.rect.colliderect(player.char_1_rect):
+        if self.rect.colliderect(self.PLAYER.char_1_rect):
             #check what kind of box it was
             if self.item_type == 'Health' :
-                player.health += 25
-                if player.health > player.max_health :
-                    player.health = player.max_health
+                self.PLAYER.health += 25
+                if self.PLAYER.health > self.PLAYER.max_health :
+                    self.PLAYER.health = self.PLAYER.max_health
             elif self.item_type == 'Reduce_blood' :
-                player.health -=15
-                if player.health < 0:
-                    player.health = 0 
+                self.PLAYER.health -=15
+                if self.PLAYER.health < 0:
+                    self.PLAYER.health = 0 
             self.kill()
 
 def create_item_health_item(x, y):
@@ -391,53 +380,11 @@ class HealthBar():
 def draw_text(text,font,text_col,x,y):
     img = font.render(text,True,text_col)
     screen.blit(img,(x,y))
-
-# sprite groups
-all_sprites = pygame.sprite.Group()
-obstacles = pygame.sprite.Group()
-enemy_group = pygame.sprite.Group()
-bullet_group = pygame.sprite.Group()
-item_box_group_health_item = pygame.sprite.Group()
-item_box_group_reduce_blood_item = pygame.sprite.Group()
-lava_group = pygame.sprite.Group()
-
-#enemy
-enemy = ghost(x_position=100, y_position=200, image_ghost="Image/ghost_2.png", 
-              image_bullet="Image/action_ghost_2.png", health=150)
-
-#setting player
-reduce_blood_value = 100   
-character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
-player_rect = pygame.Rect(100,100, 50, 50)
-player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
-
-#the floor section
-dirt_blocks = pygame.sprite.Group()
-for i in range(0, 9000, 71):  # start, how long, space (dirt = 40, lava = 71)
-    block = LavaBlock(i, 361, 9)
-    dirt_blocks.add(block)
-
-# pick up boxes
-health_box_img = pygame.image.load("Image/item_3.png").convert_alpha()
-reduce_blood_box_img = pygame.image.load("Image/item_4.png").convert_alpha()
-item_boxes = { 
-    'Health': health_box_img,
-    'Reduce_blood' : reduce_blood_box_img
-}
-
-#define font
-font =pygame.font.SysFont('Futura',20)
-
-
-#moving objects
-speed = 4
-scroll_x = 0 
-end_of_level_x = 9110   
-level_next = False
-def move_objects_for_right(speed, move):
+    
+def move_objects_for_right1(speed, move):
     global scroll_x,level_next
     if scroll_x >= end_of_level_x - width:
-        if player.char_1_rect.left > width:
+        if character.char_1_rect.left > width:
             level_next = True
             return True
     if move and scroll_x < end_of_level_x - width:
@@ -446,158 +393,15 @@ def move_objects_for_right(speed, move):
             block.rect.x -= speed
         return False
 
-#game loop
-run = True
-while run:
-    clock.tick(FPS)
-    ##Startgame
-    screen.blit(background_start,(0,0))
-    button_start.draw(screen)
-    #button start
-    if button_start.is_pressed():
-        button_value = True
-    if button_value == True:
-        screen.blit(select_characters,(0,0))
-        characters = [character_1, character_2, character_3]
-        for index, CHARACTER in enumerate(characters):
-            CHARACTER.draw(screen)
-            if CHARACTER.is_pressed():
-                character_values[index] = True
-                selected_character_index = index
-                break
-                
-        for index, character_value in enumerate(character_values):
-            if character_value:
-                screen.blit(eval(f'background_character_{index + 1}'), (0, 0))
-                button_play.draw(screen)
-                button_back.draw(screen)
-
-                if button_back.is_pressed():
-                    back_value = True
-                    break
-                elif button_play.is_pressed():
-                    play_value = True
-                    break
-            
-    if back_value:
-        button_value = True
-        character_values = [False, False, False]  
-        back_value = False
-
-    if play_value:
-        screen.fill((0, 0, 0))
-        screen.blit(background2, (0, 0))
-        #the floor section
-        dirt_blocks = pygame.sprite.Group()
-        for i in range(0, 9000, 71):  # start, how long, space (dirt = 40, lava = 71)
-            block = LavaBlock(i, 361, 9)
-            dirt_blocks.add(block)
-            #y = 361(first(floor)), 300(second), 240(third), 180(forth)
-            #the last number is number of blocks
-            #the first 9110 blocks is the first session
-            #the last 500 blocks is the end
-        create_blocks_1(0, 361, 6)
-        create_blocks_1(300, 300, 6)
-        create_blocks_1(540, 240, 5)
-        create_blocks_1(780, 361, 12)
-        create_ghost(780, 213, 480) # ghost
-        create_blocks_1(1300, 300, 10)
-        create_blocks_1(1840, 240, 14)
-        create_ghost(1840, 92, 560) # ghost
-        create_blocks_1(2500, 300, 10)
-        create_item_health_item(3000,190) #Item
-        create_blocks_1(2900, 240, 8)
-        create_blocks_1(3220, 180, 15)
-        create_ghost(3220, 31, 600) # ghost
-        create_blocks_1(4000, 300, 10)
-        create_ghost(4000, 151, 400)  # ghost
-        create_blocks_1(4400, 240, 9)
-        create_blocks_1(4800, 361, 6)
-        create_item_health_item(4900,310) #Item
-        create_blocks_1(5040, 300, 5)
-        create_blocks_1(5240, 240, 15) 
-        create_ghost(5240, 92, 600) # ghost
-        create_blocks_1(6000, 300, 8)
-        create_blocks_1(6320, 240, 3)
-        create_blocks_1(6440, 180, 15)
-        create_ghost(6440, 31, 600) # ghost
-        create_blocks_1(7040, 240, 8)
-        create_blocks_1(7360, 180, 8)
-        create_item_health_item(7500,130) #Item
-        create_blocks_1(7680, 240, 6)
-        create_blocks_1(7920, 300, 15)
-        create_ghost(7920, 151, 600) # ghost
-        create_blocks_1(8520, 361, 20)
-        create_ghost(8520, 213, 800) # ghost
-        #end of first session
-        
+def move_objects_for_right(player, offset_x, width, end_of_level_x):
+    scroll_area_width = 200
     
-        enemy.draw(screen)
-        player.draw()
-        health_bar = HealthBar(10,10,player.health,player.health)
-        item_box_group_health_item.update(scroll_x)
-        item_box_group_health_item.draw(screen)
-        item_box_group_reduce_blood_item.update(scroll_x)
-        item_box_group_reduce_blood_item.draw(screen)
-        #show player health
-        health_bar.draw(player.health)
-        #show enemy
-        draw_text(f"ENEMY :",font,WHITE,10,35)
-        '''
-        for x in range(player.ammo):
-            screen.blit((90+(x*10),40))
-        '''
-        #BULLETS
-        bullet_group.update()
-        bullet_group.draw(screen)
-
-        player.update_jump(dirt_blocks)
-        player.move(movetothe_left, movetothe_right,dirt_blocks)
-        dirt_blocks.draw(screen)
-        move_objects_for_right(speed, movetothe_right)
-        player.update()
-
-        for enemy in enemy_group:
-            enemy.update(scroll_x,player)
-            enemy.draw(screen)
-            if -150 <= enemy.rect.x <= 720:
-                for bullet in bullet_group:
-                    if enemy.rect.colliderect(bullet.rect):
-                        enemy.take_damage(10)
-                        bullet.kill()
-                
-                # Check for collisions between boss bullets and players.
-                for bullet in enemy.bullets:
-                    if bullet.rect.colliderect(player.char_1_rect):
-                        player.health -= 10  
-                        bullet.kill()
-            # End game if boss health reaches 0
-            if enemy.health <= 0:
-                enemy.kill()
-        break
-  
-    for event in pygame.event.get():  
-        if event.type == pygame.QUIT:  
-            run = False
-        #keyboard control (pressed)
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                movetothe_left = True
-            if event.key == pygame.K_RIGHT:
-                movetothe_right = True
-            if event.key == pygame.K_ESCAPE: #closing game window with ESC
-                run = False
-            if event.key == pygame.K_UP: 
-                player.jump()
-            if event.key == pygame.K_SPACE:
-                player.shoot()
-
-        #(released)
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
-                movetothe_left = False
-            if event.key == pygame.K_RIGHT:
-                movetothe_right = False
-
-    pygame.display.update()
-pygame.quit()
+    if offset_x >= end_of_level_x - width:
+        if player.rect.left > width:
+            return True, True  # return (should_scroll, level_complete)
+            
+    if ((player.rect.right - offset_x >= width - scroll_area_width) and player.x_vel > 0) or (
+            (player.rect.left - offset_x <= scroll_area_width) and player.x_vel < 0):
+        return True, False
+        
+    return False, False
