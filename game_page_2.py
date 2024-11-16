@@ -22,7 +22,7 @@ width, length = screen.get_size() #get the windows size
 movetothe_left = False
 movetothe_right = False
 
-
+ 
 class character(pygame.sprite.Sprite):
     def __init__(self,x, y,image_path , speed,ammo,enemy=None):
         pygame.sprite.Sprite.__init__(self)
@@ -41,6 +41,7 @@ class character(pygame.sprite.Sprite):
         self.enemy = enemy
         self.start_enemy = enemy
         self.y = y
+        self.alive = True
        
         # properties for jumping
         self.jumping = False
@@ -86,6 +87,11 @@ class character(pygame.sprite.Sprite):
         if scroll_x < end_of_level_x - 360: 
             if self.char_1_rect.right > 360: #dont go out of the right side
                  self.char_1_rect.right = 360
+
+        '''#check for collision with lava 
+        lava_group = pygame.sprite.Group()
+        if pygame.sprite.spritecollide(self,lava_group,False):
+            self.health = 0'''
 
     def update_jump(self,dirt_blocks):
         self.on_ground = False
@@ -133,10 +139,19 @@ class character(pygame.sprite.Sprite):
             self.health = 0
             self.speed = 0
             self.alive = False
+            '''self.game_over()'''
+
+    '''def game_over(self):
+        screen.fill(WHITE)  
+        screen.blit(game_over, (200, 150))
+        pygame.display.update()
+        pygame.time.wait(2000)''' 
 
     def update(self):
         self.check_alive()
 
+game_over = pygame.image.load("Image/gameover.png").convert_alpha()
+game_over_image = pygame.transform.scale(game_over, (400, 300))
 # sprite groups
 all_sprites = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
@@ -144,7 +159,6 @@ enemy_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 item_box_group_health_item = pygame.sprite.Group()
 item_box_group_reduce_blood_item = pygame.sprite.Group()
-lava_group = pygame.sprite.Group()
 
 # Enemy
 enemy_image = pygame.image.load('Image/ghost_2.png')  
@@ -492,6 +506,12 @@ while run:
     screen.fill((0,0,0))
     screen.blit(background2, (0, 0))
     player.draw()
+    player.check_alive()
+    '''if player.health <= 0:
+        screen.blit(game_over, (720 // 2 - 200, 400 // 2 - 150))
+    else:
+        pygame.draw.rect(screen, (255, 0, 0), (20, 20, player.health * 2, 30))'''
+    
     #enemy.move()
     enemy.draw(screen)
     item_box_group_health_item.update(scroll_x)
