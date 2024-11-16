@@ -38,6 +38,7 @@ background_character_3 = pygame.image.load("Image/select_3.png")
 background2 = pygame.image.load("Image/background_2.png")
 background3 = pygame.image.load("Image/background_3.png")
 howtoplay = pygame.image.load("Image/howtoplay.png")
+gameover = pygame.image.load("Image/gameover.png").convert_alpha()
 
 
 class button:
@@ -67,6 +68,8 @@ character_3 = button("Image/3_charecter.png",(479,135))
 button_back = button("Image/button_back.png",(252,327))
 button_play = button("Image/button_play.png",(365,327))
 button_play_howtoplay = button("Image/button_play.png",(590,340))
+button_newgame = button("Image/newgame.png",(294,280))
+
 
 
 # variable
@@ -76,6 +79,7 @@ character_values = [False, False, False]
 back_value = False
 play_value = False
 selected_character_index = 0
+gameover_value = False
 
 #keyboard control
 movetothe_left = False
@@ -210,7 +214,7 @@ class character(pygame.sprite.Sprite):
         bullet = Bullet(self.char_1_rect.centerx + (0.6 * self.char_1_rect.size[0] * self.direction), 
         self.char_1_rect.centery, self.direction)
         bullet_group.add(bullet)
-
+        
     def check_alive(self):
         if self.health <= 0:
             self.health = 0
@@ -219,6 +223,7 @@ class character(pygame.sprite.Sprite):
 
     def update(self):
         self.check_alive()
+
         
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x_position, y_position, move_range=400):
@@ -311,6 +316,12 @@ class Enemy(pygame.sprite.Sprite):
         self.health -= amount
         if self.health <= 0:
             self.kill()
+    
+    def reset(self):
+        self.rect.x = self.initial_x 
+        self.rect.y = self.initial_y 
+        self.health = self.max_health
+        self.bullets.empty()
 
 class GhostBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, bullet_image, speed, target_x):
@@ -640,7 +651,6 @@ create_ghost(8520, 213, 800) # ghost
 #the floor section
 dirt_blocks_2 = pygame.sprite.Group()
 for i in range(0, 11000, 71):  # start, how long, space (dirt = 40, lava = 71)
-    #block = DirtBlock(i, 361, 9)
     block = LavaBlock(i, 361, 9)
     dirt_blocks_2.add(block)
 
@@ -694,12 +704,127 @@ create_blocks_2(9700, 361, 50)
 create_item_health_item_2(9800,310) #Item
 create_ghost_boss(10000, 200)  #ghost boss      
 
-level_next_to_boos = False
+  
+def reset_game():    
+    global button_value, howtoplay_button_value, character_values, back_value, play_value
+    global gameover_value, speed, scroll_x, end_of_level_x, level_next
+    global player, health_bar, enemy_group, bullet_group, dirt_blocks, item_box_group_health_item
+    # reset game
+    all_sprites.empty()
+    obstacles.empty()
+    enemy_group.empty()
+    enemy_group_2.empty()
+    bullet_group.empty()
+    item_box_group_health_item.empty()
+    item_box_group_health_item_2.empty()
+    item_box_group_reduce_blood_item_2.empty()
+    boss_group.empty()
+    dirt_blocks.empty()
+    dirt_blocks_2.empty()
+    
+    button_value = False
+    howtoplay_button_value = 0
+    character_values = [False, False, False]
+    back_value = False
+    play_value = False
+    selected_character_index = 0
+    gameover_value = False
+    speed = 10
+    scroll_x = 0 
+    end_of_level_x = 9110   
+    level_next = False
+    
+    # Create again
+    enemy = Enemy(100, 215)
+    reduce_blood_value = 100   
+    character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
+    player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
+    player_rect = pygame.Rect(100,100, 50, 50)
+    
+    for i in range(0, 9000, 71):  # start, how long, space (dirt = 40, lava = 71)
+        block = LavaBlock(i, 361, 9)
+        dirt_blocks.add(block)
+    create_blocks_1(0, 361, 6)
+    create_blocks_1(300, 300, 6)
+    create_blocks_1(540, 240, 5)
+    create_blocks_1(780, 361, 12)
+    create_ghost(780, 213, 480) # ghost
+    create_blocks_1(1300, 300, 10)
+    create_blocks_1(1840, 240, 14)
+    create_ghost(1840, 92, 560) # ghost
+    create_blocks_1(2500, 300, 10)
+    create_item_health_item(3000,190) #Item
+    create_blocks_1(2900, 240, 8)
+    create_blocks_1(3220, 180, 15)
+    create_ghost(3220, 31, 600) # ghost
+    create_blocks_1(4000, 300, 10)
+    create_ghost(4000, 151, 400)  # ghost
+    create_blocks_1(4400, 240, 9)
+    create_blocks_1(4800, 361, 6)
+    create_item_health_item(4900,310) #Item
+    create_blocks_1(5040, 300, 5)
+    create_blocks_1(5240, 240, 15) 
+    create_ghost(5240, 92, 600) # ghost
+    create_blocks_1(6000, 300, 8)
+    create_blocks_1(6320, 240, 3)
+    create_blocks_1(6440, 180, 15)
+    create_ghost(6440, 31, 600) # ghost
+    create_blocks_1(7040, 240, 8)
+    create_blocks_1(7360, 180, 8)
+    create_item_health_item(7500,130) #Item
+    create_blocks_1(7680, 240, 6)
+    create_blocks_1(7920, 300, 15)
+    create_ghost(7920, 151, 600) # ghost
+    create_blocks_1(8520, 361, 20)
+    create_ghost(8520, 213, 800) # ghost
+    #end of first session
+    
+    for i in range(0, 11000, 71):  # start, how long, space (dirt = 40, lava = 71)
+        block = LavaBlock(i, 361, 9)
+        dirt_blocks_2.add(block)
+    create_blocks_2(0, 361, 15)
+    create_item_health_item_2(400,310) #Item
+    create_blocks_2(650 , 300, 5)
+    create_blocks_2(900, 240, 6)
+    create_item_reduce_blood_item_2(1000,190) #Item
+    create_blocks_2(1200, 180, 15)
+    create_ghost_2(1500, 31, 480) #ghost
+    create_blocks_2(1850, 300, 4)
+    create_blocks_2(2100, 361, 6)
+    create_blocks_2(2400, 300, 5)
+    create_blocks_2(2700, 240, 6)
+    create_item_reduce_blood_item_2(2800,190) #Item
+    create_blocks_2(3000, 180, 6)
+    create_blocks_2(3350, 180, 7)
+    create_ghost_2(3400, 31, 480) #ghost
+    create_blocks_2(3700, 300, 6)
+    create_blocks_2(4000, 240, 5)
+    create_blocks_2(4300, 300, 6)
+    create_blocks_2(4600, 361, 13)
+    create_item_health_item_2(5000,310) #Item
+    create_blocks_2(5240, 300, 7)
+    create_blocks_2(5600, 240, 8)
+    create_blocks_2(6000, 180, 5)
+    create_ghost_2(6500, 31, 480) #ghost
+    create_blocks_2(6320, 180, 12)
+    create_blocks_2(6900, 240, 6)
+    create_blocks_2(7300, 300, 10)
+    create_item_reduce_blood_item_2(7500,240) #Item 
+    create_blocks_2(7780, 361, 8)
+    create_blocks_2(8200, 300, 8)
+    create_blocks_2(8620, 240, 8)
+    create_item_health_item_2(8800,190) #Item
+    create_ghost_2(9500, 31, 480) #ghost
+    create_blocks_2(9000, 180, 15)
+    create_blocks_2(9700, 361, 50)
+    create_item_health_item_2(9800,310) #Item
+    create_ghost_boss(10000, 200)  #ghost boss
+  
+    
 #game loop
 run = True
 while run:
     clock.tick(FPS)
-    ##Startgame
     screen.blit(background_start,(0,0))
     button_start.draw(screen)
     button_howtoplay.draw(screen)
@@ -749,7 +874,18 @@ while run:
         screen.fill((0,0,0))
         screen.blit(background2, (0, 0))
         
-        player.draw()
+        if player.health > 0:
+            player.draw()
+            move_objects_for_right(speed, movetothe_right)
+        else:
+            player.kill()
+            screen.blit(gameover, (0, 0))
+            button_newgame.draw(screen)
+            if button_newgame.is_pressed():
+                reset_game()
+                
+                
+                
         dirt_blocks.draw(screen)
         
         #enemy.move()
@@ -757,7 +893,6 @@ while run:
         item_box_group_health_item.draw(screen)
         #show player health
         health_bar.draw(player.health)
-        #show enemy
         draw_text(f"HEART :",font,WHITE,10,35)
         '''
         for x in range(player.ammo):
@@ -769,7 +904,6 @@ while run:
 
         player.update_jump(dirt_blocks)
         player.move(movetothe_left, movetothe_right,dirt_blocks)
-        move_objects_for_right(speed, movetothe_right)
         player.update()
 
         for enemy in enemy_group:
@@ -793,60 +927,60 @@ while run:
             if enemy.rect.x < player.y:
                 player.health -= 50
                 enemy.kill()
-                
-        if level_next :
-            play_value = False
-            scroll_x = 0  # Reset scroll_x and end_of_level_x for the next level
-            end_of_level_x = 10500 
-        
-        if level_next :
-                screen.fill((0,0,0))
-                screen.blit(background3, (0, 0))
-                player.draw()
-                item_box_group_health_item_2.update(scroll_x)
-                item_box_group_health_item_2.draw(screen)
-                item_box_group_reduce_blood_item_2.update(scroll_x)
-                item_box_group_reduce_blood_item_2.draw(screen)
-                #show player health
-                health_bar.draw(player.health)
-                #show enemy
-                draw_text(f"HEART :",font,WHITE,10,35)
-                '''
-                for x in range(player.ammo):
-                    screen.blit((90+(x*10),40))
-                '''
 
-                #BULLETS
-                bullet_group.update()
-                bullet_group.draw(screen)
+            
+    if level_next :
+        play_value = False
+        scroll_x = 0  # Reset scroll_x and end_of_level_x for the next level
+        end_of_level_x = 10500 
+    
+    if level_next :
+            screen.fill((0,0,0))
+            screen.blit(background3, (0, 0))
+            player.draw()
+            item_box_group_health_item_2.update(scroll_x)
+            item_box_group_health_item_2.draw(screen)
+            item_box_group_reduce_blood_item_2.update(scroll_x)
+            item_box_group_reduce_blood_item_2.draw(screen)
+            #show player health
+            health_bar.draw(player.health)
+            draw_text(f"HEART :",font,WHITE,10,35)
+            '''
+            for x in range(player.ammo):
+                screen.blit((90+(x*10),40))
+            '''
 
-                player.update_jump(dirt_blocks_2)
-                player.move(movetothe_left, movetothe_right,dirt_blocks_2)
-                dirt_blocks_2.draw(screen)
-                move_objects_for_right(speed, movetothe_right)
+            #BULLETS
+            bullet_group.update()
+            bullet_group.draw(screen)
 
-                for enemy in enemy_group:
-                    enemy.update(scroll_x)
-                    enemy.draw(screen)
-                    if -150 <= enemy.rect.x <= 720:
-                        for bullet in bullet_group:
-                            if enemy.rect.colliderect(bullet.rect):
-                                enemy.take_damage(10)
-                                bullet.kill()
-                        
-                        # Check for collisions between boss bullets and players.
-                        for bullet in enemy.bullets:
-                            if bullet.rect.colliderect(player.char_1_rect):
-                                player.health -= 10  
-                                bullet.kill()
-                    # End game if boss health reaches 0
-                    if enemy.health <= 0:
-                        enemy.kill()
-                    #if the player touch the enemy, the health bar will get deducted
-                    if enemy.rect.x < player.y:
-                        player.health -= 50
-                        enemy.kill()
-                        break
+            player.update_jump(dirt_blocks_2)
+            player.move(movetothe_left, movetothe_right,dirt_blocks_2)
+            dirt_blocks_2.draw(screen)
+            move_objects_for_right(speed, movetothe_right)
+
+            for enemy in enemy_group:
+                enemy.update(scroll_x)
+                enemy.draw(screen)
+                if -150 <= enemy.rect.x <= 720:
+                    for bullet in bullet_group:
+                        if enemy.rect.colliderect(bullet.rect):
+                            enemy.take_damage(10)
+                            bullet.kill()
+                    
+                    # Check for collisions between boss bullets and players.
+                    for bullet in enemy.bullets:
+                        if bullet.rect.colliderect(player.char_1_rect):
+                            player.health -= 10  
+                            bullet.kill()
+                # End game if boss health reaches 0
+                if enemy.health <= 0:
+                    enemy.kill()
+                #if the player touch the enemy, the health bar will get deducted
+                if enemy.rect.x < player.y:
+                    player.health -= 50
+                    enemy.kill()
+            
                 
                 for boss in boss_group:
                     boss.update(scroll_x)
@@ -878,7 +1012,9 @@ while run:
                 if event.key == pygame.K_ESCAPE: #closing game window with ESC
                     run = False
                 if event.key == pygame.K_UP: 
-                    player.jump()
+                    if player.health > 0:
+                        player.jump()
+                        
                 if event.key == pygame.K_SPACE:
                     player.shoot()
 
