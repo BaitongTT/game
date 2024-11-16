@@ -37,6 +37,7 @@ background_character_2 = pygame.image.load("Image/select_2.png")
 background_character_3 = pygame.image.load("Image/select_3.png")
 background2 = pygame.image.load("Image/background_2.png")
 background3 = pygame.image.load("Image/background_3.png")
+howtoplay = pygame.image.load("Image/howtoplay.png")
 
 
 class button:
@@ -59,16 +60,18 @@ class button:
 
 # set button
 button_start = button("Image/button_start.png" ,(300,320))  #Button
-button_howtoplay= button("Image/button_howtoplay.png",(0,250))
+button_howtoplay= button("Image/button_howtoplay.png",(650,20))
 character_1 = button("Image/1_charecter.png",(60,133))
 character_2 = button("Image/2_charecter.png",(269,135))
 character_3 = button("Image/3_charecter.png",(479,135))
 button_back = button("Image/button_back.png",(252,327))
 button_play = button("Image/button_play.png",(365,327))
+button_play_howtoplay = button("Image/button_play.png",(590,340))
 
 
 # variable
 button_value = False
+howtoplay_button_value = 0
 character_values = [False, False, False]
 back_value = False
 play_value = False
@@ -699,7 +702,17 @@ while run:
     ##Startgame
     screen.blit(background_start,(0,0))
     button_start.draw(screen)
+    button_howtoplay.draw(screen)
     #button start
+    if button_howtoplay.is_pressed():
+        howtoplay_button_value = 1
+    if howtoplay_button_value == 1:
+        screen.fill((0,0,0))
+        screen.blit(howtoplay,(0,0))
+        button_play_howtoplay.draw(screen)
+        if button_play_howtoplay.is_pressed() :
+            button_value = True
+        
     if button_start.is_pressed():
         button_value = True
     if button_value == True:
@@ -745,7 +758,7 @@ while run:
         #show player health
         health_bar.draw(player.health)
         #show enemy
-        draw_text(f"ENEMY :",font,WHITE,10,35)
+        draw_text(f"HEART :",font,WHITE,10,35)
         '''
         for x in range(player.ammo):
             screen.blit((90+(x*10),40))
@@ -797,7 +810,7 @@ while run:
                 #show player health
                 health_bar.draw(player.health)
                 #show enemy
-                draw_text(f"ENEMY :",font,WHITE,10,35)
+                draw_text(f"HEART :",font,WHITE,10,35)
                 '''
                 for x in range(player.ammo):
                     screen.blit((90+(x*10),40))
