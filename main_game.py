@@ -463,7 +463,7 @@ enemy = Enemy(100, 215)
 #player
 reduce_blood_value = 100   
 character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
-player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
+player = None
 player_rect = pygame.Rect(100,100, 50, 50)
 
 # ITEMS
@@ -529,8 +529,7 @@ class HealthBar():
         ratio = self.health/self.max_health
         pygame.draw.rect(screen,BLACK,(self.x-2,self.y-2,150,20))
         pygame.draw.rect(screen,RED,(self.x,self.y,150,20))
-        pygame.draw.rect(screen,GREEN,(self.x,self.y,150*ratio,20))
-health_bar = HealthBar(10,10,player.health,player.health)        
+        pygame.draw.rect(screen,GREEN,(self.x,self.y,150*ratio,20))       
 
 #define font
 font =pygame.font.SysFont('Futura',20)
@@ -710,7 +709,6 @@ while run:
             characterr.draw(screen)
             if characterr.is_pressed():
                 character_values[index] = True
-                selected_character_index = index
                 break
                 
         for index, character_value in enumerate(character_values):
@@ -724,6 +722,9 @@ while run:
                     break
                 elif button_play.is_pressed():
                     play_value = True
+                    selected_character_index = index
+                    player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
+                    health_bar = HealthBar(10,10,player.health,player.health) 
                     break
             
     if back_value:
@@ -779,8 +780,13 @@ while run:
             if enemy.rect.x < player.y:
                 player.health -= 50
                 enemy.kill()
-            
-        if level_next_to_boos :
+                
+        if level_next :
+            play_value = False
+            scroll_x = 0  # Reset scroll_x and end_of_level_x for the next level
+            end_of_level_x = 10500 
+        
+        if level_next :
                 screen.fill((0,0,0))
                 screen.blit(background3, (0, 0))
                 player.draw()
