@@ -263,6 +263,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self, scroll_x):
         self.rect.x = self.absolute_x - scroll_x
+        self.move()
         if -150 <= self.rect.x <= 720:
         # Move within the defined range
             if player.char_1_rect.centerx < self.rect.centerx:  
@@ -321,6 +322,17 @@ class Enemy(pygame.sprite.Sprite):
         self.health -= amount
         if self.health <= 0:
             self.kill()
+    
+    def move(self):
+        # Move the enemy within the allowed range
+        if self.direction == 1:  # Moving right
+            self.absolute_x += self.speed
+            if self.absolute_x >= (self.start_x + self.move_range):  # Check if it has moved too far right
+                self.direction = -1  # Change direction to left
+        elif self.direction == -1:  # Moving left
+            self.absolute_x -= self.speed
+            if self.absolute_x <= (self.start_x - self.move_range):  # Check if it has moved too far left
+                self.direction = 1  # Change direction to right
     
     def reset(self):
         self.rect.x = self.initial_x 
@@ -622,35 +634,35 @@ create_blocks_1(0, 361, 6)
 create_blocks_1(300, 300, 6)
 create_blocks_1(540, 240, 5)
 create_blocks_1(780, 361, 12)
-create_ghost(1080, 213, 480) # ghost
+create_ghost(954, 213, 200) # ghost
 create_blocks_1(1300, 300, 10)
 create_blocks_1(1840, 240, 14)
-create_ghost(2100, 92, 560) # ghost
+create_ghost(2050, 92, 230) # ghost
 create_blocks_1(2500, 300, 10)
 create_item_health_item(3000,190) #Item
 create_blocks_1(2900, 240, 8)
 create_blocks_1(3220, 180, 15)
-create_ghost(3480, 31, 600) # ghost
+create_ghost(3452, 31, 251) # ghost
 create_blocks_1(4000, 300, 10)
-create_ghost(4240, 151, 400)  # ghost
+create_ghost(4131, 151, 151)  # ghost
 create_blocks_1(4400, 240, 9)
 create_blocks_1(4800, 361, 6)
 create_item_health_item(4900,310) #Item
 create_blocks_1(5040, 300, 5)
 create_blocks_1(5240, 240, 15) 
-create_ghost(5500, 92, 600) # ghost
+create_ghost(5470, 92, 251) # ghost
 create_blocks_1(6000, 300, 8)
 create_blocks_1(6320, 240, 3)
 create_blocks_1(6440, 180, 15)
-create_ghost(6880, 31, 600) # ghost
+create_ghost(6670, 31, 251) # ghost
 create_blocks_1(7040, 240, 8)
 create_blocks_1(7360, 180, 8)
 create_item_health_item(7500,130) #Item
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
-create_ghost(8200, 151, 600) # ghost
+create_ghost(8150, 151, 251) # ghost
 create_blocks_1(8520, 361, 20)
-create_ghost(8600, 213, 800) # ghost
+create_ghost(8750, 213, 251) # ghost
 #end of first session
 
 #the floor section
