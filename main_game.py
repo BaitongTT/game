@@ -89,27 +89,35 @@ scroll_x = 0
 end_of_level_x = 9110   
 level_next = False
 def move_objects_for_right(speed, move):
-    global scroll_x,level_next, player
+    global scroll_x,level_next, player, end_of_level_x
     if scroll_x >= end_of_level_x - width:
-        if player.char_1_rect.left > width:
+        if player.char_1_rect.left > 580:
             level_next = True
             player.char_1_rect.left = 0
             return True
     if move and scroll_x < end_of_level_x - width:
-        scroll_x += speed 
+        #if the player isn't stuck, then the object is moving
+        if player.char_1_rect.x >= 21:  
+            scroll_x += speed 
         for block in dirt_blocks:
             if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
                 block.rect.x == speed #the objects don't move
             else:
                 block.rect.x -= speed #the objects move to the left
         return False
-    
-def move_objects_for_right_lavelnext(speed, move):
-    global scroll_x
-    if move and scroll_x < end_of_level_x - width:
-        scroll_x += speed 
+
+def move_objects_for_right_levelnext(speed, move):
+    global scroll_x, player
+    print(scroll_x)
+    if move and scroll_x < end_of_level_x - width: 
+        if player.char_1_rect.x >= 0:  #21 is the rect.x starting point of the player
+            player.char_1_rect.left += speed
+            scroll_x += speed 
         for block in dirt_blocks_2:
-            block.rect.x -= speed
+            if player.char_1_rect.x < 0: 
+                block.rect.x == speed #the objects don't move
+            else:
+                block.rect.x -= speed #the objects move to the left
         return False
 
 class character(pygame.sprite.Sprite):
@@ -189,7 +197,7 @@ class character(pygame.sprite.Sprite):
                     self.jumping = False
                     self.vertical_velocity = 0
 
-    def move(self, movetothe_left, movetothe_right,dirt_blocks_2):
+    def move_2(self, movetothe_left, movetothe_right,dirt_blocks_2):
         self.old_x = self.char_1_rect.x
         self.old_y = self.char_1_rect.y
         self.change_x = 0
@@ -235,13 +243,13 @@ class character(pygame.sprite.Sprite):
                     self.vertical_velocity = 0
         
 
-    def update_jump(self,dirt_blocks):
+    def update_jump(self, dirt_blocks_2):
         self.on_ground = False
         self.vertical_velocity += self.gravity
         self.char_1_rect.y += self.vertical_velocity
         # update jumping
                 
-        for block in dirt_blocks: # Check for vertical collisions with blocks
+        for block in dirt_blocks_2: # Check for vertical collisions with blocks
                 if self.char_1_rect.colliderect(block.rect):
                     if self.vertical_velocity > 0:
                         self.char_1_rect.bottom = block.rect.top
@@ -958,7 +966,7 @@ while run:
             move_objects_for_right(speed, movetothe_right)
             player.update_jump(dirt_blocks)
             player.move(movetothe_left, movetothe_right,dirt_blocks)
-            player.move(movetothe_left, movetothe_right,dirt_blocks_2)
+            player.move_2(movetothe_left, movetothe_right,dirt_blocks_2)
             player.update()
         else:
             player.kill()
@@ -1011,9 +1019,10 @@ while run:
             
             if player.health > 0:
                 player.draw()
-                move_objects_for_right_lavelnext(speed, movetothe_right)
+                move_objects_for_right_levelnext(speed, movetothe_right)
                 player.update_jump(dirt_blocks_2)
-                player.move(movetothe_left, movetothe_right,dirt_blocks_2)
+                player.move(movetothe_left, movetothe_right,dirt_blocks)
+                player.move_2(movetothe_left, movetothe_right,dirt_blocks_2)
                 player.update()
 
             else:
