@@ -753,35 +753,35 @@ def reset_game():
     create_blocks_1(300, 300, 6)
     create_blocks_1(540, 240, 5)
     create_blocks_1(780, 361, 12)
-    create_ghost(780, 213, 480) # ghost
+    create_ghost(1080, 213, 480) # ghost
     create_blocks_1(1300, 300, 10)
     create_blocks_1(1840, 240, 14)
-    create_ghost(1840, 92, 560) # ghost
+    create_ghost(2100, 92, 560) # ghost
     create_blocks_1(2500, 300, 10)
     create_item_health_item(3000,190) #Item
     create_blocks_1(2900, 240, 8)
     create_blocks_1(3220, 180, 15)
-    create_ghost(3220, 31, 600) # ghost
+    create_ghost(3480, 31, 600) # ghost
     create_blocks_1(4000, 300, 10)
-    create_ghost(4000, 151, 400)  # ghost
+    create_ghost(4240, 151, 400)  # ghost
     create_blocks_1(4400, 240, 9)
     create_blocks_1(4800, 361, 6)
     create_item_health_item(4900,310) #Item
     create_blocks_1(5040, 300, 5)
     create_blocks_1(5240, 240, 15) 
-    create_ghost(5240, 92, 600) # ghost
+    create_ghost(5500, 92, 600) # ghost
     create_blocks_1(6000, 300, 8)
     create_blocks_1(6320, 240, 3)
     create_blocks_1(6440, 180, 15)
-    create_ghost(6440, 31, 600) # ghost
+    create_ghost(6880, 31, 600) # ghost
     create_blocks_1(7040, 240, 8)
     create_blocks_1(7360, 180, 8)
     create_item_health_item(7500,130) #Item
     create_blocks_1(7680, 240, 6)
     create_blocks_1(7920, 300, 15)
-    create_ghost(7920, 151, 600) # ghost
+    create_ghost(8200, 151, 600) # ghost
     create_blocks_1(8520, 361, 20)
-    create_ghost(8520, 213, 800) # ghost
+    create_ghost(8600, 213, 800) # ghost
     #end of first session
     
     for i in range(0, 11000, 71):  # start, how long, space (dirt = 40, lava = 71)
