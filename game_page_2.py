@@ -42,6 +42,7 @@ class character(pygame.sprite.Sprite):
         self.start_enemy = enemy
         self.y = y
         self.alive = True
+        self.enemies_defeated = 0
        
         # properties for jumping
         self.jumping = False
@@ -84,7 +85,9 @@ class character(pygame.sprite.Sprite):
         if self.char_1_rect.left < 0:  #dont go out of the left side
             self.char_1_rect.left = 0
         #360 is length (720) divided by 2 to make the char be in the middle of the frame
-        if scroll_x < end_of_level_x - 360: 
+        if self.enemies_defeated >= 8:
+                pass
+        else:
             if self.char_1_rect.right > 360: #dont go out of the right side
                  self.char_1_rect.right = 360
 
@@ -555,10 +558,12 @@ while run:
         # End game if boss health reaches 0
         if enemy.health <= 0:
             enemy.kill()
+            player.enemies_defeated += 1
         #if the player touch the enemy, the health bar will get deducted
         if enemy.rect.x < player.y:
             player.health -= 50
             enemy.kill()
+            player.enemies_defeated += 1
             break
     
     for event in pygame.event.get():  

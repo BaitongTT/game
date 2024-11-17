@@ -120,6 +120,8 @@ class character(pygame.sprite.Sprite):
         self.enemy = enemy
         self.start_enemy = enemy
         self.y = y
+        self.x = x
+        self.enemy_defeated = 0
        
         # properties for jumping
         self.jumping = False
@@ -160,10 +162,13 @@ class character(pygame.sprite.Sprite):
 
         if self.char_1_rect.left < 0:  #dont go out of the left side
             self.char_1_rect.left = 0
-        #360 is length (720) divided by 2 to make the char be in the middle of the frame
-        if scroll_x >= end_of_level_x - 360: 
-            if self.char_1_rect.right > 360: #dont go out of the right side
-                 self.char_1_rect.right = 360
+        #240 is the x's position that the player is set.
+        #8 is last enemy of first session, then the player can walk off screen
+        if self.enemy_defeated == 8: 
+                pass
+        else: 
+            if self.char_1_rect.right > 240: #dont go out of the left mid
+                 self.char_1_rect.right = 240
                  
         for block in dirt_blocks:
             if self.char_1_rect.colliderect(block.rect):
@@ -617,35 +622,35 @@ create_blocks_1(0, 361, 6)
 create_blocks_1(300, 300, 6)
 create_blocks_1(540, 240, 5)
 create_blocks_1(780, 361, 12)
-create_ghost(780, 213, 480) # ghost
+create_ghost(1080, 213, 480) # ghost
 create_blocks_1(1300, 300, 10)
 create_blocks_1(1840, 240, 14)
-create_ghost(1840, 92, 560) # ghost
+create_ghost(2100, 92, 560) # ghost
 create_blocks_1(2500, 300, 10)
 create_item_health_item(3000,190) #Item
 create_blocks_1(2900, 240, 8)
 create_blocks_1(3220, 180, 15)
-create_ghost(3220, 31, 600) # ghost
+create_ghost(3480, 31, 600) # ghost
 create_blocks_1(4000, 300, 10)
-create_ghost(4000, 151, 400)  # ghost
+create_ghost(4240, 151, 400)  # ghost
 create_blocks_1(4400, 240, 9)
 create_blocks_1(4800, 361, 6)
 create_item_health_item(4900,310) #Item
 create_blocks_1(5040, 300, 5)
 create_blocks_1(5240, 240, 15) 
-create_ghost(5240, 92, 600) # ghost
+create_ghost(5500, 92, 600) # ghost
 create_blocks_1(6000, 300, 8)
 create_blocks_1(6320, 240, 3)
 create_blocks_1(6440, 180, 15)
-create_ghost(6440, 31, 600) # ghost
+create_ghost(6880, 31, 600) # ghost
 create_blocks_1(7040, 240, 8)
 create_blocks_1(7360, 180, 8)
 create_item_health_item(7500,130) #Item
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
-create_ghost(7920, 151, 600) # ghost
+create_ghost(8200, 151, 600) # ghost
 create_blocks_1(8520, 361, 20)
-create_ghost(8520, 213, 800) # ghost
+create_ghost(8600, 213, 800) # ghost
 #end of first session
 
 #the floor section
@@ -864,7 +869,7 @@ while run:
                     player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
                     health_bar = HealthBar(10,10,player.health,player.health) 
                     break
-            
+     
     if back_value:
         button_value = True
         character_values = [False, False, False]  
@@ -923,10 +928,12 @@ while run:
             # End game if boss health reaches 0
             if enemy.health <= 0:
                 enemy.kill()
+                player.enemy_defeated += 1
             #if the player touch the enemy, the health bar will get deducted
             if enemy.rect.x < player.y:
                 player.health -= 50
                 enemy.kill()
+                player.enemy_defeated += 1
 
             
     if level_next :
@@ -1016,7 +1023,8 @@ while run:
                         player.jump()
                         
                 if event.key == pygame.K_SPACE:
-                    player.shoot()
+                    if player.health > 0:
+                        player.shoot()
 
             #(released)
             if event.type == pygame.KEYUP:
