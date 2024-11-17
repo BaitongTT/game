@@ -101,7 +101,7 @@ def move_objects_for_right(speed, move):
             scroll_x += speed 
         for block in dirt_blocks:
             if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
-                block.rect.x == speed #the objects don't move
+                pass
             else:
                 block.rect.x -= speed #the objects move to the left
         return False
@@ -115,7 +115,7 @@ def move_objects_for_right_levelnext(speed, move):
             scroll_x += speed 
         for block in dirt_blocks_2:
             if player.char_1_rect.x < 0: 
-                block.rect.x == speed #the objects don't move
+                pass #the objects don't move
             else:
                 block.rect.x -= speed #the objects move to the left
         return False
