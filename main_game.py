@@ -70,8 +70,6 @@ button_play = button("Image/button_play.png",(365,327))
 button_play_howtoplay = button("Image/button_play.png",(590,340))
 button_newgame = button("Image/newgame.png",(294,280))
 
-
-
 # variable
 button_value = False
 howtoplay_button_value = 0
@@ -95,10 +93,19 @@ def move_objects_for_right(speed, move):
     if scroll_x >= end_of_level_x - width:
         if player.char_1_rect.left > width:
             level_next = True
+            player.char_1_rect.left = 0
             return True
     if move and scroll_x < end_of_level_x - width:
         scroll_x += speed 
         for block in dirt_blocks:
+            block.rect.x -= speed
+        return False
+    
+def move_objects_for_right_lavelnext(speed, move):
+    global scroll_x
+    if move and scroll_x < end_of_level_x - width:
+        scroll_x += speed 
+        for block in dirt_blocks_2:
             block.rect.x -= speed
         return False
 
@@ -108,7 +115,8 @@ class character(pygame.sprite.Sprite):
         self.speed = speed
         self.direction = 1
         self.flip = False
-        self.char_1 = pygame.image.load(image_path).convert_alpha()
+        self.image_path = pygame.image.load(image_path).convert_alpha()
+        self.char_1 = self.image_path 
         self.char_1_rect = self.char_1.get_rect()
         self.rect = self.char_1.get_rect() 
         self.char_1_rect.center = (x, y)
@@ -136,26 +144,26 @@ class character(pygame.sprite.Sprite):
     def move(self, movetothe_left, movetothe_right,dirt_blocks):
         self.old_x = self.char_1_rect.x
         self.old_y = self.char_1_rect.y
-        change_x = 0
+        self.change_x = 0
         if not self.blocked or self.jumping:
             if (movetothe_left):
-                change_x = -self.speed
+                self.change_x = -self.speed
                 self.flip = True
                 self.direction = -1
             if (movetothe_right):
-                change_x = self.speed
+                self.change_x = self.speed
                 self.flip = False
                 self.direction = 1
 
         #update position
-        self.char_1_rect.x += change_x
+        self.char_1_rect.x += self.change_x
         self.blocked = False
 
         for block in dirt_blocks: # Check for collisions with blocks
             if self.char_1_rect.colliderect(block.rect):
-                if change_x > 0:  # Moving right
+                if self.change_x > 0:  # Moving right
                     self.char_1_rect.right = block.rect.left
-                elif change_x < 0:  # Moving left
+                elif self.change_x < 0:  # Moving left
                     self.char_1_rect.left = block.rect.right
                 self.blocked = True
                 break
@@ -228,7 +236,7 @@ class character(pygame.sprite.Sprite):
 
     def update(self):
         self.check_alive()
-
+        
         
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x_position, y_position, move_range=400):
@@ -248,7 +256,7 @@ class Enemy(pygame.sprite.Sprite):
         self.absolute_x = x_position
        
         self.move_range = move_range
-        self.health = 100 
+        self.health = 100
         self.max_health = 100
         self.shoot_timer = 0 
         self.shoot_interval = 120
@@ -370,9 +378,9 @@ def create_ghost_2(x_position, y_position, move_range):
     #y_position: y coordinate
     #move_range: how far the ghost can move left/right from its starting position
 
-    enemy = Enemy(x_position, y_position, move_range)
-    enemy_group_2.add(enemy)
-    return enemy
+    enemy_2 = Enemy(x_position, y_position, move_range)
+    enemy_group_2.add(enemy_2)
+    return enemy_2
 
 # Boss class
 class ghost_boss(pygame.sprite.Sprite):
@@ -539,14 +547,14 @@ def create_item_health_item(x, y):
     return health_item
 
 def create_item_health_item_2(x, y):
-    health_item  = ItemBox('Health',x,y)
-    item_box_group_health_item_2.add(health_item)    
-    return health_item
+    health_item_2  = ItemBox('Health',x,y)
+    item_box_group_health_item_2.add(health_item_2)    
+    return health_item_2
 
 def create_item_reduce_blood_item_2(x, y):
-    reduce_blood_item  = ItemBox('Reduce_blood',x,y)
-    item_box_group_reduce_blood_item_2.add(reduce_blood_item)    
-    return reduce_blood_item
+    reduce_blood_item_2  = ItemBox('Reduce_blood',x,y)
+    item_box_group_reduce_blood_item_2.add(reduce_blood_item_2)    
+    return reduce_blood_item_2
 
 # HealthBar
 class HealthBar():
@@ -725,7 +733,7 @@ create_ghost_boss(10000, 200)  #ghost boss
 def reset_game():    
     global button_value, howtoplay_button_value, character_values, back_value, play_value
     global gameover_value, speed, scroll_x, end_of_level_x, level_next
-    global player, health_bar, enemy_group, bullet_group, dirt_blocks, item_box_group_health_item
+    global player, health_bar, enemy_group, bullet_group, dirt_blocks, item_box_group_health_item,dirt_blocks_2
     # reset game
     all_sprites.empty()
     obstacles.empty()
@@ -836,7 +844,12 @@ def reset_game():
     create_blocks_2(9700, 361, 50)
     create_item_health_item_2(9800,310) #Item
     create_ghost_boss(10000, 200)  #ghost boss
-  
+
+def resetfornextlavel():
+    global scroll_x,end_of_level_x,play
+    scroll_x = 0  # Reset scroll_x and end_of_level_x for the next level
+    end_of_level_x = 10500 
+    
     
 #game loop
 run = True
@@ -890,10 +903,14 @@ while run:
     if play_value:
         screen.fill((0,0,0))
         screen.blit(background2, (0, 0))
+        dirt_blocks.draw(screen)
         
         if player.health > 0:
             player.draw()
             move_objects_for_right(speed, movetothe_right)
+            player.update_jump(dirt_blocks)
+            player.move(movetothe_left, movetothe_right,dirt_blocks)
+            player.update()
         else:
             player.kill()
             screen.blit(gameover, (0, 0))
@@ -901,27 +918,14 @@ while run:
             if button_newgame.is_pressed():
                 reset_game()
                 
-                
-                
-        dirt_blocks.draw(screen)
-        
-        #enemy.move()
         item_box_group_health_item.update(scroll_x)
         item_box_group_health_item.draw(screen)
         #show player health
         health_bar.draw(player.health)
         draw_text(f"HEART :",font,WHITE,10,35)
-        '''
-        for x in range(player.ammo):
-            screen.blit((90+(x*10),40))
-        '''
         #BULLETS
         bullet_group.update()
         bullet_group.draw(screen)
-
-        player.update_jump(dirt_blocks)
-        player.move(movetothe_left, movetothe_right,dirt_blocks)
-        player.update()
 
         for enemy in enemy_group:
             enemy.update(scroll_x)
@@ -929,7 +933,7 @@ while run:
             if -150 <= enemy.rect.x <= 720:
                 for bullet in bullet_group:
                     if enemy.rect.colliderect(bullet.rect):
-                        enemy.take_damage(10)
+                        enemy.take_damage(100) #กำหนดเพื่อให้ง่ายต่อการรัน เดี๋ยวมาเปลี่ยน
                         bullet.kill()
                 
                 # Check for collisions between boss bullets and players.
@@ -948,16 +952,28 @@ while run:
                 enemy.kill()
                 player.enemy_defeated += 1
 
-            
-    if level_next :
-        play_value = False
-        scroll_x = 0  # Reset scroll_x and end_of_level_x for the next level
-        end_of_level_x = 10500 
     
+    if level_next :
+            resetfornextlavel()
     if level_next :
             screen.fill((0,0,0))
             screen.blit(background3, (0, 0))
-            player.draw()
+            dirt_blocks_2.draw(screen)
+            
+            if player.health > 0:
+                player.draw()
+                move_objects_for_right_lavelnext(speed, movetothe_right)
+                player.update_jump(dirt_blocks_2)
+                player.move(movetothe_left, movetothe_right,dirt_blocks_2)
+                player.update()
+
+            else:
+                player.kill()
+                screen.blit(gameover, (0, 0))
+                button_newgame.draw(screen)
+                if button_newgame.is_pressed():
+                    reset_game()
+            
             item_box_group_health_item_2.update(scroll_x)
             item_box_group_health_item_2.draw(screen)
             item_box_group_reduce_blood_item_2.update(scroll_x)
@@ -965,61 +981,56 @@ while run:
             #show player health
             health_bar.draw(player.health)
             draw_text(f"HEART :",font,WHITE,10,35)
-            '''
-            for x in range(player.ammo):
-                screen.blit((90+(x*10),40))
-            '''
 
             #BULLETS
             bullet_group.update()
             bullet_group.draw(screen)
 
-            player.update_jump(dirt_blocks_2)
-            player.move(movetothe_left, movetothe_right,dirt_blocks_2)
-            dirt_blocks_2.draw(screen)
-            move_objects_for_right(speed, movetothe_right)
-
-            for enemy in enemy_group:
-                enemy.update(scroll_x)
-                enemy.draw(screen)
-                if -150 <= enemy.rect.x <= 720:
+            for enemy_2 in enemy_group_2:
+                enemy_2.update(scroll_x)
+                enemy_2.draw(screen)
+                if -150 <= enemy_2.rect.x <= 720:
                     for bullet in bullet_group:
-                        if enemy.rect.colliderect(bullet.rect):
-                            enemy.take_damage(10)
+                        if enemy_2.rect.colliderect(bullet.rect):
+                            enemy_2.take_damage(10)
                             bullet.kill()
                     
                     # Check for collisions between boss bullets and players.
-                    for bullet in enemy.bullets:
+                    for bullet in enemy_2.bullets:
                         if bullet.rect.colliderect(player.char_1_rect):
                             player.health -= 10  
                             bullet.kill()
                 # End game if boss health reaches 0
-                if enemy.health <= 0:
-                    enemy.kill()
+                if enemy_2.health <= 0:
+                    enemy_2.kill()
                 #if the player touch the enemy, the health bar will get deducted
-                if enemy.rect.x < player.y:
+                if enemy_2.rect.x < player.y:
                     player.health -= 50
-                    enemy.kill()
+                    enemy_2.kill()
             
-                
-                for boss in boss_group:
-                    boss.update(scroll_x)
-                    boss.draw(screen)
-                    if -150 <= boss.rect.x <= 720:
-                        for bullet in bullet_group:
-                            if boss.rect.colliderect(bullet.rect):
-                                boss.take_damage(10)
-                                bullet.kill()
-                        
-                        # Check for collisions between boss bullets and players.
-                        for bullet in boss.bullets:
-                            if bullet.rect.colliderect(player.char_1_rect):
-                                player.health -= 10  
-                                bullet.kill()
-                    # End game if boss health reaches 0
-                    if boss.health <= 0:
-                        boss.kill()
-            
+
+            for boss in boss_group:
+                boss.update(scroll_x)
+                boss.draw(screen)
+                if -150 <= boss.rect.x <= 720:
+                    for bullet in bullet_group:
+                        if boss.rect.colliderect(bullet.rect):
+                            boss.take_damage(10)
+                            bullet.kill()
+                    
+                    # Check for collisions between boss bullets and players.
+                    for bullet in boss.bullets:
+                        if bullet.rect.colliderect(player.char_1_rect):
+                            player.health -= 15  
+                            bullet.kill()
+                # End game if boss health reaches 0
+                if boss.health <= 0:
+                    boss.kill()
+                #if the player touch the enemy, the health bar will get deducted
+                if boss.rect.x < player.y:
+                    player.health -= 50
+                    boss.kill()
+        
     for event in pygame.event.get():  
             if event.type == pygame.QUIT:  
                 run = False
