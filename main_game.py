@@ -95,6 +95,7 @@ def move_objects_for_right(speed, move):
     if scroll_x >= end_of_level_x - width:
         if player.char_1_rect.left > width:
             level_next = True
+            player.char_1_rect.left = 0
             return True
     if move and scroll_x < end_of_level_x - width:
         scroll_x += speed 
@@ -248,7 +249,7 @@ class Enemy(pygame.sprite.Sprite):
         self.absolute_x = x_position
        
         self.move_range = move_range
-        self.health = 100 
+        self.health = 100
         self.max_health = 100
         self.shoot_timer = 0 
         self.shoot_interval = 120
