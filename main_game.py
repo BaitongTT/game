@@ -248,7 +248,7 @@ class Enemy(pygame.sprite.Sprite):
         self.absolute_x = x_position
        
         self.move_range = move_range
-        self.health = 100  
+        self.health = 100 
         self.max_health = 100
         self.shoot_timer = 0 
         self.shoot_interval = 120
@@ -930,7 +930,8 @@ while run:
                 enemy.kill()
                 player.enemy_defeated += 1
             #if the player touch the enemy, the health bar will get deducted
-            if enemy.rect.x < player.y:
+            #it's because of hitboxs, so putting +100 making it looks more real (collide)
+            if enemy.rect.x +100 < player.y:
                 player.health -= 50
                 enemy.kill()
                 player.enemy_defeated += 1
