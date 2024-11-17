@@ -89,7 +89,7 @@ scroll_x = 0
 end_of_level_x = 9110   
 level_next = False
 def move_objects_for_right(speed, move):
-    global scroll_x,level_next
+    global scroll_x,level_next, player
     if scroll_x >= end_of_level_x - width:
         if player.char_1_rect.left > width:
             level_next = True
@@ -98,7 +98,10 @@ def move_objects_for_right(speed, move):
     if move and scroll_x < end_of_level_x - width:
         scroll_x += speed 
         for block in dirt_blocks:
-            block.rect.x -= speed
+            if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
+                block.rect.x == speed #the objects don't move
+            else:
+                block.rect.x -= speed #the objects move to the left
         return False
     
 def move_objects_for_right_lavelnext(speed, move):
@@ -179,6 +182,51 @@ class character(pygame.sprite.Sprite):
                  self.char_1_rect.right = 240
                  
         for block in dirt_blocks:
+            if self.char_1_rect.colliderect(block.rect):
+                if self.old_y + self.char_1_rect.height <= block.rect.top:  # Character was above the block
+                    self.char_1_rect.bottom = block.rect.top
+                    self.on_ground = True
+                    self.jumping = False
+                    self.vertical_velocity = 0
+
+    def move(self, movetothe_left, movetothe_right,dirt_blocks_2):
+        self.old_x = self.char_1_rect.x
+        self.old_y = self.char_1_rect.y
+        self.change_x = 0
+        if not self.blocked or self.jumping:
+            if (movetothe_left):
+                self.change_x = -self.speed
+                self.flip = True
+                self.direction = -1
+            if (movetothe_right):
+                self.change_x = self.speed
+                self.flip = False
+                self.direction = 1
+
+        #update position
+        self.char_1_rect.x += self.change_x
+        self.blocked = False
+
+        for block in dirt_blocks_2: # Check for collisions with blocks
+            if self.char_1_rect.colliderect(block.rect):
+                if self.change_x > 0:  # Moving right
+                    self.char_1_rect.right = block.rect.left
+                elif self.change_x < 0:  # Moving left
+                    self.char_1_rect.left = block.rect.right
+                self.blocked = True
+                break
+
+        if self.char_1_rect.left < 0:  #dont go out of the left side
+            self.char_1_rect.left = 0
+        #240 is the x's position that the player is set.
+        #8 is last enemy of first session, then the player can walk off screen
+        if self.enemy_defeated == 8: 
+                pass
+        else: 
+            if self.char_1_rect.right > 240: #dont go out of the left mid
+                 self.char_1_rect.right = 240
+                 
+        for block in dirt_blocks_2:
             if self.char_1_rect.colliderect(block.rect):
                 if self.old_y + self.char_1_rect.height <= block.rect.top:  # Character was above the block
                     self.char_1_rect.bottom = block.rect.top
@@ -910,6 +958,7 @@ while run:
             move_objects_for_right(speed, movetothe_right)
             player.update_jump(dirt_blocks)
             player.move(movetothe_left, movetothe_right,dirt_blocks)
+            player.move(movetothe_left, movetothe_right,dirt_blocks_2)
             player.update()
         else:
             player.kill()
