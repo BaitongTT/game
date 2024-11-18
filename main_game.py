@@ -86,7 +86,6 @@ play_value = False
 selected_character_index = 0
 gameover_value = False
 start = False
-victory_value = False
 
 #keyboard control
 movetothe_left = False
@@ -437,7 +436,7 @@ def create_ghost(x_position, y_position, move_range):
 
 # Boss class
 class ghost_boss(pygame.sprite.Sprite):
-    def __init__(self, x_position, y_position,move_range=200):
+    def __init__(self, x_position, y_position,move_range=50):
         super().__init__()
         self.original_image = pygame.image.load("Image/ghost_1.png")
         self.original_image = pygame.transform.scale(self.original_image, (150, 150))
@@ -772,7 +771,7 @@ def create_blocks_2(start_x, y_pos, count):
 #the last 500 blocks is the end
 
 create_blocks_2(0, 361, 30 )
-create_ghost_boss(600, 200)  #ghost boss      
+create_ghost_boss(500, 200)  #ghost boss      
 
   
 def reset_game():    
@@ -815,12 +814,16 @@ def reset_game():
     for i in range(0, 15000, 71):  # start, how long, space (dirt = 40, lava = 71)
         lava = LavaBlock(i, 361, 9)
         lava_blocks.add(lava)
-            
+    #y = 361(first(floor)), 300(second), 240(third), 180(forth)
+    #the last number is number of blocks
+    #the first 9110 blocks is the first session
+    #the last 500 blocks is the end
     create_blocks_1(0, 361, 6)
     create_blocks_1(300, 300, 6)
     create_ghost(360, 151, 72) #ghost1
     create_blocks_1(540, 240, 5)
     create_blocks_1(780, 361, 12)
+    create_item_reduce_blood_item(850,310) #item
     create_ghost(954, 213, 200) # ghost2
     create_blocks_1(1300, 300, 10)
     create_ghost(1400, 151, 100) #ghost3
@@ -864,6 +867,7 @@ def reset_game():
     create_blocks_1(10240, 361, 15)
     create_ghost(10500, 213, 200) #ghost17
     create_blocks_1(10840, 300, 8)
+    create_item_reduce_blood_item(10950,240) #item
     create_blocks_1(11200, 240, 8)
     create_blocks_1(11560, 180, 26)
     create_ghost(11700, 31, 150) #ghost18
@@ -871,16 +875,17 @@ def reset_game():
 
         
     create_blocks_2(0, 361, 30   )
-    create_ghost_boss(600, 200)  #ghost boss 
+    create_ghost_boss(500, 200)  #ghost boss 
 
 def reset_gamefornextlevel():    
     global speed, scroll_x, end_of_level_x, level_next,movetothe_left,movetothe_right
-    global  enemy_group, bullet_group, dirt_blocks, item_box_group_health_item,start
+    global  enemy_group, bullet_group, dirt_blocks, item_box_group_health_item,start,item_box_group_reduce_blood_item
     # reset game
     all_sprites.empty()
     obstacles.empty()
     enemy_group.empty()
     item_box_group_health_item.empty()
+    item_box_group_reduce_blood_item.empty()
     dirt_blocks.empty()
     lava_blocks.empty()
     
@@ -968,6 +973,8 @@ while run:
                     
             item_box_group_health_item.update(scroll_x)
             item_box_group_health_item.draw(screen)
+            item_box_group_reduce_blood_item.update(scroll_x)
+            item_box_group_reduce_blood_item.draw(screen)
             #show player health
             draw_text(f"HEART :",font,WHITE,10,35)
             #BULLETS
@@ -1025,6 +1032,12 @@ while run:
             #show player health
             health_bar.draw(player.health)
             draw_text(f"HEART :",font,WHITE,10,35)
+            
+            if player.char_1_rect.left < 0:  #dont go out of the left side
+                player.char_1_rect.left = 0
+            else: 
+                if player.char_1_rect.right > 720: #dont go out of the left mid
+                    player.char_1_rect.right = 720
 
             #BULLETS
             bullet_group.update()
@@ -1050,10 +1063,9 @@ while run:
                 #if the player touch the enemy, the health bar will get deducted
                 if boss.rect.x < player.y:
                     player.health -= 50
-                    boss.kill()
+
+                    
             if len(boss_group) == 0:
-                victory_value == True
-            if victory_value:
                 screen.blit(victory, (0, 0))
                 button_newgame.draw(screen)
                 if button_newgame.is_pressed():
@@ -1068,19 +1080,14 @@ while run:
                     movetothe_left = True
                     if player.health == 0:
                         movetothe_left = False
-
             if event.key == pygame.K_RIGHT:
                     movetothe_right = True
-
                     if player.health == 0:
                         movetothe_right = False
-
             if event.key == pygame.K_ESCAPE:  # Closing game window with ESC
                 run = False
-
             if event.key == pygame.K_UP:
                     player.jump()
-
             if event.key == pygame.K_SPACE:
                     player.shoot()
 
