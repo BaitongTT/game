@@ -970,11 +970,11 @@ while run:
                     if button_newgame.is_pressed():
                         reset_game()
                     
-                    
-            item_box_group_health_item.update(scroll_x)
-            item_box_group_health_item.draw(screen)
-            item_box_group_reduce_blood_item.update(scroll_x)
-            item_box_group_reduce_blood_item.draw(screen)
+            if player.health > 0:        
+                item_box_group_health_item.update(scroll_x)
+                item_box_group_health_item.draw(screen)
+                item_box_group_reduce_blood_item.update(scroll_x)
+                item_box_group_reduce_blood_item.draw(screen)
             #show player health
             draw_text(f"HEART :",font,WHITE,10,35)
             #BULLETS
@@ -982,13 +982,14 @@ while run:
             bullet_group.draw(screen)
 
             for enemy in enemy_group:
-                enemy.update(scroll_x)
-                enemy.draw(screen)
-                if -150 <= enemy.rect.x <= 720:
-                    for bullet in bullet_group:
-                        if enemy.rect.colliderect(bullet.rect):
-                            enemy.take_damage(100) #กำหนดเพื่อให้ง่ายต่อการรัน เดี๋ยวมาเปลี่ยน
-                            bullet.kill()
+                if player.health > 0:
+                    enemy.update(scroll_x)
+                    enemy.draw(screen)
+                    if -150 <= enemy.rect.x <= 720:
+                        for bullet in bullet_group:
+                            if enemy.rect.colliderect(bullet.rect):
+                                enemy.take_damage(100) #กำหนดเพื่อให้ง่ายต่อการรัน เดี๋ยวมาเปลี่ยน
+                                bullet.kill()
                     
                     # Check for collisions between boss bullets and players.
                     for bullet in enemy.bullets:
