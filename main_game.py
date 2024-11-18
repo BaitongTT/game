@@ -26,6 +26,7 @@ obstacles = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 enemy_group_2 = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
+bullet_group_2 = pygame.sprite.Group()
 item_box_group_health_item = pygame.sprite.Group()
 item_box_group_health_item_2 = pygame.sprite.Group()
 item_box_group_reduce_blood_item_2 = pygame.sprite.Group()
@@ -120,19 +121,6 @@ def move_objects_for_right(speed, move):
             lava.rect.x -= speed
         return False
 
-def move_objects_for_right_levelnext(speed, move):
-    global scroll_x_2, player_2
-    print(scroll_x_2)
-    if move and scroll_x_2 < end_of_level_x_2 - width: 
-        if player_2.char_2_rect.x >= 0:  #21 is the rect.x starting point of the player
-            player_2.char_2_rect.left += speed
-            scroll_x_2 += speed 
-        for block in dirt_blocks_2:
-            if player_2.char_2_rect.x < 0: 
-                pass #the objects don't move
-            else:
-                block.rect.x -= speed #the objects move to the left
-        return False
 
 class character(pygame.sprite.Sprite):
     def __init__(self,x, y,image_path , speed,ammo,enemy=None):
@@ -338,6 +326,7 @@ class character_next(pygame.sprite.Sprite):
         self.on_ground = False
         self.blocked = False
         self.on_platform = False
+        self.change_x = 0
     
     def move_next_2(self, movetothe_left_2, movetothe_right_2,dirt_blocks_2):
         self.old_x = self.char_2_rect.x
@@ -421,7 +410,7 @@ class character_next(pygame.sprite.Sprite):
         #.centery (spawn at the mid of the player)
         bullet = Bullet(self.char_2_rect.centerx + (0.6 * self.char_2_rect.size[0] * self.direction), 
         self.char_2_rect.centery, self.direction)
-        bullet_group.add(bullet)
+        bullet_group_2.add(bullet)
         
     def check_alive(self):
         if self.health <= 0:
@@ -1063,12 +1052,15 @@ def reset_game():
     enemy_group.empty()
     enemy_group_2.empty()
     bullet_group.empty()
+    bullet_group_2.empty()
     item_box_group_health_item.empty()
     item_box_group_health_item_2.empty()
     item_box_group_reduce_blood_item_2.empty()
     boss_group.empty()
     dirt_blocks.empty()
     dirt_blocks_2.empty()
+    lava_blocks.empty()
+    lava_blocks_2.empty()
     
     button_value = False
     howtoplay_button_value = 0
@@ -1076,59 +1068,64 @@ def reset_game():
     back_value = False
     play_value = False
     selected_character_index = 0
-    gameover_value = False
     speed = 10
     scroll_x = 0 
+    scroll_x_2 = 0
     end_of_level_x = 9110   
+    end_of_level_x_2 = 11000
     level_next = False
     
     # Create again
     enemy = Enemy(100, 215)
+    enemy_2 = Enemy_2(100, 215)
     reduce_blood_value = 100   
     character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
     player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
     player_rect = pygame.Rect(100,100, 50, 50)
     
-    
+    for i in range(0, 9000, 71):  # start, how long, space (dirt = 40, lava = 71)
+        lava = LavaBlock(i, 361, 9)
+        lava_blocks.add(lava)
+
     create_blocks_1(0, 361, 6)
     create_blocks_1(300, 300, 6)
     create_blocks_1(540, 240, 5)
     create_blocks_1(780, 361, 12)
-    create_ghost(1080, 213, 480) # ghost
+    create_ghost(954, 213, 200) # ghost
     create_blocks_1(1300, 300, 10)
     create_blocks_1(1840, 240, 14)
-    create_ghost(2100, 92, 560) # ghost
+    create_ghost(2050, 92, 230) # ghost
     create_blocks_1(2500, 300, 10)
     create_item_health_item(3000,190) #Item
     create_blocks_1(2900, 240, 8)
     create_blocks_1(3220, 180, 15)
-    create_ghost(3480, 31, 600) # ghost
+    create_ghost(3452, 31, 251) # ghost
     create_blocks_1(4000, 300, 10)
-    create_ghost(4240, 151, 400)  # ghost
+    create_ghost(4131, 151, 151)  # ghost
     create_blocks_1(4400, 240, 9)
     create_blocks_1(4800, 361, 6)
     create_item_health_item(4900,310) #Item
     create_blocks_1(5040, 300, 5)
     create_blocks_1(5240, 240, 15) 
-    create_ghost(5500, 92, 600) # ghost
+    create_ghost(5470, 92, 251) # ghost
     create_blocks_1(6000, 300, 8)
     create_blocks_1(6320, 240, 3)
     create_blocks_1(6440, 180, 15)
-    create_ghost(6880, 31, 600) # ghost
+    create_ghost(6670, 31, 251) # ghost
     create_blocks_1(7040, 240, 8)
     create_blocks_1(7360, 180, 8)
     create_item_health_item(7500,130) #Item
     create_blocks_1(7680, 240, 6)
     create_blocks_1(7920, 300, 15)
-    create_ghost(8200, 151, 600) # ghost
+    create_ghost(8150, 151, 251) # ghost
     create_blocks_1(8520, 361, 20)
-    create_ghost(8600, 213, 800) # ghost
+    create_ghost(8750, 213, 251) # ghost
     #end of first session
-    
+        
     for i in range(0, 11000, 71):  # start, how long, space (dirt = 40, lava = 71)
         block = LavaBlock(i, 361, 9)
         dirt_blocks_2.add(block)
-    create_blocks_2(0, 361, 15)
+    create_blocks_2(0, 361, 15   )
     create_item_health_item_2(400,310) #Item
     create_blocks_2(650 , 300, 5)
     create_blocks_2(900, 240, 6)
@@ -1164,11 +1161,11 @@ def reset_game():
     create_blocks_2(9000, 180, 15)
     create_blocks_2(9700, 361, 50)
     create_item_health_item_2(9800,310) #Item
-    create_ghost_boss(10000, 200)  #ghost boss
+    create_ghost_boss(10000, 200)  #ghost boss 
 
 def reset_gamefornextlevel():    
     global speed, scroll_x, end_of_level_x, level_next,player,movetothe_right_2,movetothe_left_2,movetothe_left,movetothe_right
-    global  enemy_group, bullet_group, dirt_blocks, item_box_group_health_item,reduce_blood_value
+    global  enemy_group, bullet_group, dirt_blocks, item_box_group_health_item,reduce_blood_value,start
     # reset game
     all_sprites.empty()
     obstacles.empty()
@@ -1177,9 +1174,11 @@ def reset_gamefornextlevel():
     item_box_group_health_item.empty()
     boss_group.empty()
     dirt_blocks.empty()
-    reduce_blood_value = player.health
-    player.kill()
-    del player
+    reduce_blood_value = 100
+    if 'player' in globals() and player.health > 0:
+        player.kill()  # Remove the player from all sprite groups
+        del player
+
     
     #keyboard control
     movetothe_left = False
@@ -1189,8 +1188,8 @@ def reset_gamefornextlevel():
     
     speed = 10
     scroll_x = 0    
-    level_next = False
-    
+    start = False
+    level_next = True
     
 #game loop
 run = True
@@ -1248,11 +1247,11 @@ while run:
             screen.blit(background2, (0, 0))
             lava_blocks.draw(screen)
             dirt_blocks.draw(screen)
-
+            move_objects_for_right(speed, movetothe_right)
             
-            if player.health > 0:
+            if 'player' in globals() and player.health > 0:
                 player.draw()
-                move_objects_for_right(speed, movetothe_right)
+                health_bar.draw(player.health)
                 player.update_jump(dirt_blocks)
                 player.move(movetothe_left, movetothe_right,dirt_blocks)
                 player.move_2(movetothe_left, movetothe_right,dirt_blocks_2)
@@ -1262,16 +1261,17 @@ while run:
                     if player.char_1_rect.colliderect(lava.rect):
                         player.health = 0
             else:
-                player.kill()
-                screen.blit(gameover, (0, 0))
-                button_newgame.draw(screen)
-                if button_newgame.is_pressed():
-                    reset_game()
+                if 'player' in globals():
+                    player.kill()
+                    screen.blit(gameover, (0, 0))
+                    button_newgame.draw(screen)
+                    if button_newgame.is_pressed():
+                        reset_game()
+                    
                     
             item_box_group_health_item.update(scroll_x)
             item_box_group_health_item.draw(screen)
             #show player health
-            health_bar.draw(player.health)
             draw_text(f"HEART :",font,WHITE,10,35)
             #BULLETS
             bullet_group.update()
@@ -1305,21 +1305,41 @@ while run:
         if level_next :
             reset_gamefornextlevel()
             screen.fill((0,0,0))
+            start = False
+            scroll_x_2 = 0
+        if not start and level_next:
             screen.blit(background3, (0, 0))
-            dirt_blocks_2.draw(screen)
             lava_blocks_2.draw(screen)
+            dirt_blocks_2.draw(screen)
             player_2_rect = pygame.Rect(100,100, 50, 50)
             player_2 = character_next(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy_2)
             
+            def move_objects_for_right_levelnext(speed, move):
+                global scroll_x_2, player_2
+                print(scroll_x_2)
+                if move and scroll_x_2 < end_of_level_x_2 - width: 
+                    if player_2.char_2_rect.x >= 0:  #21 is the rect.x starting point of the player
+                        player_2.char_2_rect.left += speed
+                        scroll_x_2 += speed 
+                    for block in dirt_blocks_2:
+                        if player_2.char_2_rect.x < 0: 
+                            pass #the objects don't move
+                        else:
+                            block.rect.x -= speed #the objects move to the left
+                    return False
+            move_objects_for_right_levelnext(speed, movetothe_right_2)
+            
             if player_2.health > 0:
+                print(f"Player 2 Position: {player_2.char_2_rect.x}, Health: {player_2.health}")
+                print(f"Change X: {player_2.change_x}, Position: {player_2.char_2_rect.x}")
                 player_2.draw(screen)
                 move_objects_for_right_levelnext(speed, movetothe_right_2)
                 player_2.update_jump_2(dirt_blocks_2)
                 player_2.move_next_2(movetothe_left_2, movetothe_right_2,dirt_blocks_2)
                 player_2.update(scroll_x_2)
                 for lava_2 in lava_blocks_2:
-                    if player.char_1_rect.colliderect(lava_2.rect):
-                        player.health = 0
+                    if player_2.char_2_rect.colliderect(lava_2.rect):
+                        player_2.health = 0
 
             else:
                 player_2.kill()
@@ -1337,14 +1357,14 @@ while run:
             draw_text(f"HEART :",font,WHITE,10,35)
 
             #BULLETS
-            bullet_group.update()
-            bullet_group.draw(screen)
+            bullet_group_2.update()
+            bullet_group_2.draw(screen)
 
             for enemy_2 in enemy_group_2:
                 enemy_2.update(scroll_x_2)
                 enemy_2.draw(screen)
                 if -150 <= enemy_2.rect.x <= 720:
-                    for bullet in bullet_group:
+                    for bullet in bullet_group_2:
                         if enemy_2.rect.colliderect(bullet.rect):
                             enemy_2.take_damage(10)
                             bullet.kill()
@@ -1367,7 +1387,7 @@ while run:
                 boss.update(scroll_x_2)
                 boss.draw(screen)
                 if -150 <= boss.rect.x <= 720:
-                    for bullet in bullet_group:
+                    for bullet in bullet_group_2:
                         if boss.rect.colliderect(bullet.rect):
                             boss.take_damage(10)
                             bullet.kill()
@@ -1391,44 +1411,48 @@ while run:
         #keyboard control (pressed)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                if start == True:
+                if start:  # If the game has started, move Player 1
                     movetothe_left = True
-                else:
+                    print("Player 1 left")
+                if not start  and level_next:  # If the game has not started, move Player 2
                     movetothe_left_2 = True
+                    print("Player 2 left")
+
             if event.key == pygame.K_RIGHT:
-                if start == True:
+                if start:  # If the game has started, move Player 1
                     movetothe_right = True
-                else:
+                    print("Player 1 right")
+                if not start  and level_next:  # If the game has not started, move Player 2
                     movetothe_right_2 = True
-            if event.key == pygame.K_ESCAPE: #closing game window with ESC
+                    print("Player 2 right")
+
+            if event.key == pygame.K_ESCAPE:  # Closing game window with ESC
                 run = False
-            if event.key == pygame.K_UP:
-                if start == True:
+
+            if event.key == pygame.K_UP:  # Jump for Player 1
+                if start and 'player' in globals():
                     player.jump()
-                else:
+                    print("Player 1 jump")
+                if not start and level_next:
                     player_2.jump()
                     print("Player 2 jump")
-                    
+
             if event.key == pygame.K_SPACE:
-                if start == True:
+                if start:  # If the game has started, Player 1 shoots
                     player.shoot()
-                else:
+                    print("Player 1 shoots")
+                if not start  and level_next:  # If the game has not started, Player 2 shoots
                     player_2.shoot()
-                    print("Player 2 shoot")
+                print("Player 2 shoots")
 
         #(released)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                if start == True:
                     movetothe_left = False
-                else :
                     movetothe_left_2 = False
             if event.key == pygame.K_RIGHT:
-                if start == True:
                     movetothe_right = False
-                else:
                     movetothe_right_2 = False
-
     pygame.display.update() #update the screen
 
 pygame.quit()
