@@ -1431,12 +1431,16 @@ while run:
                     print("Player 1 left")
                     movetothe_left_2 = True
                     print("Player 2 left")
+                    if player.health == 0:
+                        movetothe_left = False
 
             if event.key == pygame.K_RIGHT:
                     movetothe_right = True
                     print("Player 1 right")
                     movetothe_right_2 = True
                     print("Player 2 right")
+                    if player.health == 0:
+                        movetothe_right = False
 
             if event.key == pygame.K_ESCAPE:  # Closing game window with ESC
                 run = False
