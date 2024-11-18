@@ -112,13 +112,20 @@ def move_objects_for_right(speed, move):
         #if the player isn't stuck, then the object is moving
         if player.char_1_rect.x >= 21:  
             scroll_x += speed 
+
+        #condition of dirt blocks
         for block in dirt_blocks:
             if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
                 pass
             else:
                 block.rect.x -= speed #the objects move to the left
+        
+        #condition of lava blocks
         for lava in lava_blocks:
-            lava.rect.x -= speed
+            if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
+                pass
+            else:
+                lava.rect.x -= speed
         return False
 
 
