@@ -771,7 +771,7 @@ def create_blocks_2(start_x, y_pos, count):
 #the last 500 blocks is the end
 
 create_blocks_2(0, 361, 30 )
-create_ghost_boss(500, 200)  #ghost boss      
+create_ghost_boss(400, 200)  #ghost boss      
 
   
 def reset_game():    
@@ -806,7 +806,6 @@ def reset_game():
     reduce_blood_value = 100   
     character_images = ["Image/character_1.png","Image/character_2.png","Image/character_3.png"]
     player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
-    player_rect = pygame.Rect(100,100, 50, 50)
     
     #the floor section
     dirt_blocks = pygame.sprite.Group()
@@ -875,7 +874,7 @@ def reset_game():
 
         
     create_blocks_2(0, 361, 30   )
-    create_ghost_boss(500, 200)  #ghost boss 
+    create_ghost_boss(400, 200)  #ghost boss 
 
 def reset_gamefornextlevel():    
     global speed, scroll_x, end_of_level_x, level_next,movetothe_left,movetothe_right
@@ -953,7 +952,7 @@ while run:
                 dirt_blocks.draw(screen)
             move_objects_for_right(speed, movetothe_right)
             
-            if player.health > 0:
+            if player.health > 0 and len(boss_group) != 0:
                 player.draw()
                 health_bar.draw(player.health)
                 player.update_jump(dirt_blocks)
@@ -1002,7 +1001,7 @@ while run:
                     player.enemy_defeated += 1
                 #if the player touch the enemy, the health bar will get deducted
                 #it's because of hitboxs, so putting +100 making it looks more real (collide)
-                if enemy.rect.x +100 < player.y:
+                if enemy.rect.x + 160 < player.y:
                     player.health -= 50
                     enemy.kill()
                     player.enemy_defeated += 1
@@ -1013,13 +1012,14 @@ while run:
             start = False
         if not start and level_next:
             screen.blit(background3, (0, 0))
-            if player.health > 0:
+            if player.health > 0 and len(boss_group) != 0:
                 dirt_blocks_2.draw(screen)
             
             if player.health > 0:
                 #print(f"Player 2 Position: {player.char_1_rect.x}, Health: {player.health}")
                 #print(f"Change X: {player.change_x}, Position: {player.char_1_rect.x}")
-                player.draw()
+                if len(boss_group) != 0:
+                    player.draw()
                 player.update_jump(dirt_blocks_2)
                 player.move(movetothe_left, movetothe_right,dirt_blocks_2)
                 player.update()
@@ -1032,7 +1032,7 @@ while run:
                     reset_game()
             
             #show player health
-            if player.health > 0:
+            if player.health > 0 and len(boss_group) != 0:
                 health_bar.draw(player.health)
                 draw_text(f"HEART :",font,WHITE,10,35)
             
@@ -1065,8 +1065,8 @@ while run:
                 if boss.health <= 0:
                     boss.kill()
                 #if the player touch the enemy, the health bar will get deducted
-                if boss.rect.x < player.y:
-                    player.health -= 50
+                if boss.rect.x + 200 < player.y:
+                    player.health -= 20
 
                     
             if len(boss_group) == 0:
