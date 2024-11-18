@@ -104,7 +104,7 @@ level_next = False
 def move_objects_for_right(speed, move):
     global scroll_x,level_next, player, end_of_level_x
     if scroll_x >= end_of_level_x - width:
-        if player.char_1_rect.left > 580:
+        if player.char_1_rect.left >= 580:
             level_next = True
             player.char_1_rect.left = 0
             return True
@@ -184,9 +184,10 @@ class character(pygame.sprite.Sprite):
         if self.char_1_rect.left < 0:  #dont go out of the left side
             self.char_1_rect.left = 0
         #240 is the x's position that the player is set.
-        #8 is last enemy of first session, then the player can walk off screen
-        if self.enemy_defeated == 8: 
-                pass
+        #14 is last enemy of first session, then the player can walk off screen
+        
+        if self.enemy_defeated == 14:
+            pass
         else: 
             if self.char_1_rect.right > 240: #dont go out of the left mid
                  self.char_1_rect.right = 240
@@ -229,8 +230,8 @@ class character(pygame.sprite.Sprite):
         if self.char_1_rect.left < 0:  #dont go out of the left side
             self.char_1_rect.left = 0
         #240 is the x's position that the player is set.
-        #8 is last enemy of first session, then the player can walk off screen
-        if self.enemy_defeated == 8: 
+        #14 is last enemy of first session, then the player can walk off screen
+        if self.enemy_defeated == 14: 
                 pass
         else: 
             if self.char_1_rect.right > 240: #dont go out of the left mid
@@ -951,37 +952,43 @@ def create_blocks_1(start_x, y_pos, count):
 #the last 500 blocks is the end
 create_blocks_1(0, 361, 6)
 create_blocks_1(300, 300, 6)
+create_ghost(360, 151, 72) #ghost1
 create_blocks_1(540, 240, 5)
 create_blocks_1(780, 361, 12)
-create_ghost(954, 213, 200) # ghost
+create_ghost(954, 213, 200) # ghost2
 create_blocks_1(1300, 300, 10)
+create_ghost(1400, 151, 100) #ghost3
 create_blocks_1(1840, 240, 14)
-create_ghost(2050, 92, 230) # ghost
+create_ghost(2050, 92, 230) # ghost4
 create_blocks_1(2500, 300, 10)
 create_item_health_item(3000,190) #Item
 create_blocks_1(2900, 240, 8)
+create_ghost(3000, 92, 100) #ghost5
 create_blocks_1(3220, 180, 15)
-create_ghost(3452, 31, 251) # ghost
+create_ghost(3452, 31, 251) # ghost6
 create_blocks_1(4000, 300, 10)
-create_ghost(4131, 151, 151)  # ghost
+create_ghost(4131, 151, 151)  # ghost7
 create_blocks_1(4400, 240, 9)
+create_ghost(4550, 92, 100) #ghost8
 create_blocks_1(4800, 361, 6)
 create_item_health_item(4900,310) #Item
 create_blocks_1(5040, 300, 5)
 create_blocks_1(5240, 240, 15) 
-create_ghost(5470, 92, 251) # ghost
+create_ghost(5470, 92, 251) # ghost9
 create_blocks_1(6000, 300, 8)
 create_blocks_1(6320, 240, 3)
 create_blocks_1(6440, 180, 15)
-create_ghost(6670, 31, 251) # ghost
+create_ghost(6670, 31, 251) # ghost10
 create_blocks_1(7040, 240, 8)
+create_ghost(7100, 92, 80) #ghost11
 create_blocks_1(7360, 180, 8)
+create_ghost(7440, 31, 100) #ghost12
 create_item_health_item(7500,130) #Item
 create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
-create_ghost(8150, 151, 251) # ghost
+create_ghost(8150, 151, 251) # ghost13
 create_blocks_1(8520, 361, 20)
-create_ghost(8750, 213, 251) # ghost
+create_ghost(8750, 213, 251) # ghost14
 #end of first session
 
 #the floor section
@@ -1089,37 +1096,43 @@ def reset_game():
 
     create_blocks_1(0, 361, 6)
     create_blocks_1(300, 300, 6)
+    create_ghost(360, 151, 72) #ghost1
     create_blocks_1(540, 240, 5)
     create_blocks_1(780, 361, 12)
-    create_ghost(954, 213, 200) # ghost
+    create_ghost(954, 213, 200) # ghost2
     create_blocks_1(1300, 300, 10)
+    create_ghost(1400, 151, 100) #ghost3
     create_blocks_1(1840, 240, 14)
-    create_ghost(2050, 92, 230) # ghost
+    create_ghost(2050, 92, 230) # ghost4
     create_blocks_1(2500, 300, 10)
     create_item_health_item(3000,190) #Item
     create_blocks_1(2900, 240, 8)
+    create_ghost(3000, 92, 100) #ghost5
     create_blocks_1(3220, 180, 15)
-    create_ghost(3452, 31, 251) # ghost
+    create_ghost(3452, 31, 251) # ghost6
     create_blocks_1(4000, 300, 10)
-    create_ghost(4131, 151, 151)  # ghost
+    create_ghost(4131, 151, 151)  # ghost7
     create_blocks_1(4400, 240, 9)
+    create_ghost(4550, 92, 100) #ghost8
     create_blocks_1(4800, 361, 6)
     create_item_health_item(4900,310) #Item
     create_blocks_1(5040, 300, 5)
     create_blocks_1(5240, 240, 15) 
-    create_ghost(5470, 92, 251) # ghost
+    create_ghost(5470, 92, 251) # ghost9
     create_blocks_1(6000, 300, 8)
     create_blocks_1(6320, 240, 3)
     create_blocks_1(6440, 180, 15)
-    create_ghost(6670, 31, 251) # ghost
+    create_ghost(6670, 31, 251) # ghost10
     create_blocks_1(7040, 240, 8)
+    create_ghost(7100, 92, 80) #ghost11
     create_blocks_1(7360, 180, 8)
+    create_ghost(7440, 31, 100) #ghost12
     create_item_health_item(7500,130) #Item
     create_blocks_1(7680, 240, 6)
     create_blocks_1(7920, 300, 15)
-    create_ghost(8150, 151, 251) # ghost
+    create_ghost(8150, 151, 251) # ghost13
     create_blocks_1(8520, 361, 20)
-    create_ghost(8750, 213, 251) # ghost
+    create_ghost(8750, 213, 251) # ghost14
     #end of first session
         
     for i in range(0, 11000, 71):  # start, how long, space (dirt = 40, lava = 71)
