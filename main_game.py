@@ -948,8 +948,9 @@ while run:
         if start :
             screen.fill((0,0,0))
             screen.blit(background2, (0, 0))
-            lava_blocks.draw(screen)
-            dirt_blocks.draw(screen)
+            if player.health > 0:
+                lava_blocks.draw(screen)
+                dirt_blocks.draw(screen)
             move_objects_for_right(speed, movetothe_right)
             
             if player.health > 0:
@@ -975,8 +976,8 @@ while run:
                 item_box_group_health_item.draw(screen)
                 item_box_group_reduce_blood_item.update(scroll_x)
                 item_box_group_reduce_blood_item.draw(screen)
-            #show player health
-            draw_text(f"HEART :",font,WHITE,10,35)
+                #show player health
+                draw_text(f"HEART :",font,WHITE,10,35)
             #BULLETS
             bullet_group.update()
             bullet_group.draw(screen)
@@ -1013,7 +1014,8 @@ while run:
             start = False
         if not start and level_next:
             screen.blit(background3, (0, 0))
-            dirt_blocks_2.draw(screen)
+            if player.health > 0:
+                dirt_blocks_2.draw(screen)
             
             if player.health > 0:
                 print(f"Player 2 Position: {player.char_1_rect.x}, Health: {player.health}")
@@ -1031,8 +1033,9 @@ while run:
                     reset_game()
             
             #show player health
-            health_bar.draw(player.health)
-            draw_text(f"HEART :",font,WHITE,10,35)
+            if player.health > 0:
+                health_bar.draw(player.health)
+                draw_text(f"HEART :",font,WHITE,10,35)
             
             if player.char_1_rect.left < 0:  #dont go out of the left side
                 player.char_1_rect.left = 0
@@ -1045,8 +1048,9 @@ while run:
             bullet_group.draw(screen)
             
             for boss in boss_group:
-                boss.update(scroll_x)
-                boss.draw(screen)
+                if player.health > 0:
+                    boss.update(scroll_x)
+                    boss.draw(screen)
                 if -150 <= boss.rect.x <= 720:
                     for bullet in bullet_group:
                         if boss.rect.colliderect(bullet.rect):
