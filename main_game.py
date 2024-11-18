@@ -1089,6 +1089,7 @@ while run:
             if event.key == pygame.K_UP:
                     player.jump()
             if event.key == pygame.K_SPACE:
+                if player.health > 0:
                     player.shoot()
 
         #(released)
