@@ -1175,9 +1175,6 @@ def reset_gamefornextlevel():
     boss_group.empty()
     dirt_blocks.empty()
     reduce_blood_value = 100
-    if 'player' in globals() and player.health > 0:
-        player.kill()  # Remove the player from all sprite groups
-        del player
 
     
     #keyboard control
@@ -1233,6 +1230,8 @@ while run:
                     selected_character_index = index
                     player = character(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy)
                     health_bar = HealthBar(10,10,player.health,player.health) 
+                    player_2_rect = pygame.Rect(100,100, 50, 50)
+                    player_2 = character_next(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy_2)
                     break
      
     if back_value:
@@ -1249,7 +1248,7 @@ while run:
             dirt_blocks.draw(screen)
             move_objects_for_right(speed, movetothe_right)
             
-            if 'player' in globals() and player.health > 0:
+            if player.health > 0:
                 player.draw()
                 health_bar.draw(player.health)
                 player.update_jump(dirt_blocks)
@@ -1261,7 +1260,6 @@ while run:
                     if player.char_1_rect.colliderect(lava.rect):
                         player.health = 0
             else:
-                if 'player' in globals():
                     player.kill()
                     screen.blit(gameover, (0, 0))
                     button_newgame.draw(screen)
@@ -1311,8 +1309,6 @@ while run:
             screen.blit(background3, (0, 0))
             lava_blocks_2.draw(screen)
             dirt_blocks_2.draw(screen)
-            player_2_rect = pygame.Rect(100,100, 50, 50)
-            player_2 = character_next(55, 305, character_images[selected_character_index], 2,reduce_blood_value,enemy_2)
             
             def move_objects_for_right_levelnext(speed, move):
                 global scroll_x_2, player_2
@@ -1411,18 +1407,14 @@ while run:
         #keyboard control (pressed)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                if start:  # If the game has started, move Player 1
                     movetothe_left = True
                     print("Player 1 left")
-                if not start  and level_next:  # If the game has not started, move Player 2
                     movetothe_left_2 = True
                     print("Player 2 left")
 
             if event.key == pygame.K_RIGHT:
-                if start:  # If the game has started, move Player 1
                     movetothe_right = True
                     print("Player 1 right")
-                if not start  and level_next:  # If the game has not started, move Player 2
                     movetothe_right_2 = True
                     print("Player 2 right")
 
@@ -1430,20 +1422,16 @@ while run:
                 run = False
 
             if event.key == pygame.K_UP:  # Jump for Player 1
-                if start and 'player' in globals():
                     player.jump()
                     print("Player 1 jump")
-                if not start and level_next:
                     player_2.jump()
                     print("Player 2 jump")
 
             if event.key == pygame.K_SPACE:
-                if start:  # If the game has started, Player 1 shoots
                     player.shoot()
                     print("Player 1 shoots")
-                if not start  and level_next:  # If the game has not started, Player 2 shoots
                     player_2.shoot()
-                print("Player 2 shoots")
+                    print("Player 2 shoots")
 
         #(released)
         if event.type == pygame.KEYUP:
