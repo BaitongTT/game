@@ -98,7 +98,7 @@ movetothe_right_2 = False
 speed = 10
 scroll_x = 0 
 scroll_x_2 = 0
-end_of_level_x = 9110   
+end_of_level_x = 12400
 end_of_level_x_2 = 11000
 level_next = False
 def move_objects_for_right(speed, move):
@@ -110,22 +110,23 @@ def move_objects_for_right(speed, move):
             return True
     if move and scroll_x < end_of_level_x - width:
         #if the player isn't stuck, then the object is moving
-        if player.char_1_rect.x >= 21:  
-            scroll_x += speed 
+        if player.health > 0:
+            if player.char_1_rect.x >= 21:  
+                scroll_x += speed 
 
         #condition of dirt blocks
-        for block in dirt_blocks:
-            if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
-                pass
-            else:
-                block.rect.x -= speed #the objects move to the left
+            for block in dirt_blocks:
+                if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
+                    pass
+                else:
+                    block.rect.x -= speed #the objects move to the left
         
         #condition of lava blocks
-        for lava in lava_blocks:
-            if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
-                pass
-            else:
-                lava.rect.x -= speed
+            for lava in lava_blocks:
+                if player.char_1_rect.x < 21: #21 is the rect.x starting point of the player
+                    pass
+                else:
+                    lava.rect.x -= speed
         return False
 
 
@@ -193,7 +194,7 @@ class character(pygame.sprite.Sprite):
         #240 is the x's position that the player is set.
         #14 is last enemy of first session, then the player can walk off screen
         
-        if self.enemy_defeated == 14:
+        if self.enemy_defeated == 18:
             pass
         else: 
             if self.char_1_rect.right > 240: #dont go out of the left mid
@@ -238,7 +239,7 @@ class character(pygame.sprite.Sprite):
             self.char_1_rect.left = 0
         #240 is the x's position that the player is set.
         #14 is last enemy of first session, then the player can walk off screen
-        if self.enemy_defeated == 14: 
+        if self.enemy_defeated == 18: 
                 pass
         else: 
             if self.char_1_rect.right > 240: #dont go out of the left mid
@@ -942,7 +943,7 @@ class Bullet(pygame.sprite.Sprite):
 #the floor section
 dirt_blocks = pygame.sprite.Group()
 lava_blocks = pygame.sprite.Group()
-for i in range(0, 9000, 71):  # start, how long, space (dirt = 40, lava = 71)
+for i in range(0, 15000, 71):  # start, how long, space (dirt = 40, lava = 71)
     lava = LavaBlock(i, 361, 9)
     lava_blocks.add(lava)
 
@@ -995,7 +996,19 @@ create_blocks_1(7680, 240, 6)
 create_blocks_1(7920, 300, 15)
 create_ghost(8150, 151, 251) # ghost13
 create_blocks_1(8520, 361, 20)
+create_item_health_item(9000,310) #Item
 create_ghost(8750, 213, 251) # ghost14
+create_blocks_1(9320, 300, 8)
+create_ghost(9440, 151, 80) # ghost15
+create_blocks_1(9640, 240, 5)
+create_blocks_1(9840, 300, 10)
+create_ghost(9960, 151, 140) #ghost16
+create_blocks_1(10240, 361, 15)
+create_ghost(10500, 213, 200) #ghost17
+create_blocks_1(10840, 300, 8)
+create_blocks_1(11200, 240, 8)
+create_blocks_1(11560, 180, 26)
+create_ghost(11700, 31, 150) #ghost18
 #end of first session
 
 #the floor section
@@ -1139,7 +1152,19 @@ def reset_game():
     create_blocks_1(7920, 300, 15)
     create_ghost(8150, 151, 251) # ghost13
     create_blocks_1(8520, 361, 20)
+    create_item_health_item(9000,310) #Item
     create_ghost(8750, 213, 251) # ghost14
+    create_blocks_1(9320, 300, 8)
+    create_ghost(9440, 151, 80) # ghost15
+    create_blocks_1(9640, 240, 5)
+    create_blocks_1(9840, 300, 10)
+    create_ghost(9960, 151, 140) #ghost16
+    create_blocks_1(10240, 361, 15)
+    create_ghost(10500, 213, 200) #ghost17
+    create_blocks_1(10840, 300, 8)
+    create_blocks_1(11200, 240, 8)
+    create_blocks_1(11560, 180, 26)
+    create_ghost(11700, 31, 150) #ghost18
     #end of first session
         
     for i in range(0, 11000, 71):  # start, how long, space (dirt = 40, lava = 71)
@@ -1428,17 +1453,17 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                     movetothe_left = True
-                    print("Player 1 left")
+                    #print("Player 1 left")
                     movetothe_left_2 = True
-                    print("Player 2 left")
+                    #print("Player 2 left")
                     if player.health == 0:
                         movetothe_left = False
 
             if event.key == pygame.K_RIGHT:
                     movetothe_right = True
-                    print("Player 1 right")
+                    #print("Player 1 right")
                     movetothe_right_2 = True
-                    print("Player 2 right")
+                    #print("Player 2 right")
                     if player.health == 0:
                         movetothe_right = False
 
@@ -1447,15 +1472,15 @@ while run:
 
             if event.key == pygame.K_UP:  # Jump for Player 1
                     player.jump()
-                    print("Player 1 jump")
+                    #print("Player 1 jump")
                     player_2.jump()
-                    print("Player 2 jump")
+                    #print("Player 2 jump")
 
             if event.key == pygame.K_SPACE:
                     player.shoot()
-                    print("Player 1 shoots")
+                    #print("Player 1 shoots")
                     player_2.shoot()
-                    print("Player 2 shoots")
+                    #print("Player 2 shoots")
 
         #(released)
         if event.type == pygame.KEYUP:
