@@ -958,7 +958,6 @@ while run:
                 health_bar.draw(player.health)
                 player.update_jump(dirt_blocks)
                 player.move(movetothe_left, movetothe_right,dirt_blocks)
-                player.move_2(movetothe_left, movetothe_right,dirt_blocks_2)
                 player.update()
                 
                 for lava in lava_blocks:
@@ -1018,8 +1017,8 @@ while run:
                 dirt_blocks_2.draw(screen)
             
             if player.health > 0:
-                print(f"Player 2 Position: {player.char_1_rect.x}, Health: {player.health}")
-                print(f"Change X: {player.change_x}, Position: {player.char_1_rect.x}")
+                #print(f"Player 2 Position: {player.char_1_rect.x}, Health: {player.health}")
+                #print(f"Change X: {player.change_x}, Position: {player.char_1_rect.x}")
                 player.draw()
                 player.update_jump(dirt_blocks_2)
                 player.move(movetothe_left, movetothe_right,dirt_blocks_2)
