@@ -43,11 +43,10 @@ howtoplay = pygame.image.load("Image/howtoplay.png")
 gameover = pygame.image.load("Image/gameover.png").convert_alpha()
 
 #load music and sounds
-'''''
 pygame.mixer.music.load("Image/halloween_sound.mp3")
 pygame.mixer.music.set_volume(0.3)
 pygame.mixer_music.play(-1,0.0,5000)
-'''
+
 
 class button:
     def __init__(self, image_path, position, scale = 1.0):
